@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import keystatic from '@keystatic/astro';
 import path from 'node:path';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
@@ -31,6 +32,8 @@ import { remarkShokaRuby } from './src/lib/markdown/remark-shoka-ruby.ts';
 import { remarkShokaSpoiler } from './src/lib/markdown/remark-shoka-spoiler.ts';
 import { shokaMetaTransformer } from './src/lib/markdown/shiki-meta-transformer.ts';
 import { normalizeUrl } from './src/lib/utils.ts';
+
+import markdoc from '@astrojs/markdoc';
 
 // Load YAML config directly with Node.js (before Vite plugins are available)
 // This is only used in astro.config.mjs - other files use @rollup/plugin-yaml
@@ -191,6 +194,8 @@ export default defineConfig({
     },
   },
   integrations: [
+    keystatic(),
+    markdoc(),
     react(),
     sitemap(),
     icon({
@@ -247,10 +252,18 @@ export default defineConfig({
       },
     ],
     ssr: {
-      noExternal: ['react-tweet'],
+      noExternal: ['react-tweet', 'lodash', '@keystatic/core', '@keystatic/astro', 'direction'],
+      external: [],
+    },
+    resolve: {
+      alias: {
+        'lodash': 'lodash-es',
+        'lodash/debounce': 'lodash-es/debounce',
+        'direction': 'direction/index.js',
+      },
     },
     optimizeDeps: {
-      include: ['@antv/infographic'],
+      include: ['@antv/infographic', 'lodash', 'lodash-es'],
     },
   },
 
@@ -278,4 +291,3 @@ export default defineConfig({
     clientPrerender: false,
   },
 });
-

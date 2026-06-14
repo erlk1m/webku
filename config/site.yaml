@@ -403,7 +403,7 @@ comment:
   provider: waline  # 'remark42' | 'giscus' | 'waline' | 'twikoo' | 'none'
 
   waline:
-    envId: https://waline-comment-ten-omega.vercel.app/  # ID lingkungan Twikoo (Tencent Cloud) atau alamat lingkungan Vercel (wajib)
+    envId: https://waline-comment-ten-omega.vercel.app  # ID lingkungan Twikoo (Tencent Cloud) atau alamat lingkungan Vercel (wajib)
 
 # =============================================================================
 # Analitik (Umami)

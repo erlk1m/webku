@@ -9,13 +9,14 @@ tags:
 catalog: true
 categories:
   - tutorial
-sticky: false
+sticky: true
 draft: false
 tocNumbering: true
 excludeFromSummary: false
 math: false
-quiz: false
-keywords: []
+quiz: true
+keywords:
+  - astro
 ---
 markdown
 

@@ -1,4 +1,6 @@
 ---
+import { getCollection, render } from 'astro:content';
+import { render } from 'astro:content';
 import CustomContent from '@components/common/CustomContent.astro';
 import HomeSider from '@components/layout/HomeSider.astro';
 import SummaryPanel, { type SummarySource } from '@components/post/SummaryPanel';
@@ -49,7 +51,7 @@ const isFallback = getPostLocale(post) !== locale;
 const canonicalUrl = isFallback
   ? new URL(localizedPath(`/post/${encodeSlug(getPostSlug(post))}`, defaultLocale), Astro.site).href
   : undefined;
-const { Content } = await post.render();
+const { Content } = await render(post);
 const { title, categories = [], tags = [], date, math: postMath, keywords: postKeywords = [] } = post?.data ?? {};
 // KaTeX CSS: only load when global enableMath is on AND post hasn't opted out.
 // When enableMath is false globally, rehype-katex is not in the pipeline, so no math is rendered.

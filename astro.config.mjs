@@ -221,12 +221,31 @@ export default defineConfig({
   devToolbar: {
     enabled: true,
   },
-  vite: {
+    vite: {
     build: {
-      // Enable sourcemap for Sonda bundle analysis
       sourcemap: isAnalyze,
     },
-    plugins: [yaml(), conditionalSnowfall(), svgr(), tailwindcss()],
+    plugins: [
+      yaml(),
+      conditionalSnowfall(),
+      svgr(),
+      tailwindcss(),
+      // Stub react-tweet CSS modules during SSR
+      {
+        name: 'stub-react-tweet-css',
+        enforce: 'pre',
+        resolveId(source) {
+          if (source.includes('react-tweet') && source.endsWith('.css')) {
+            return source + '?stub';
+          }
+        },
+        load(id) {
+          if (id.endsWith('.css?stub')) {
+            return 'export default {}';
+          }
+        },
+      },
+    ],
     ssr: {
       noExternal: ['react-tweet'],
     },
@@ -234,6 +253,7 @@ export default defineConfig({
       include: ['@antv/infographic'],
     },
   },
+
   // Only enable Astro i18n routing when multiple locales are configured.
   // Single-locale sites skip this entirely — no /[lang]/ routes are generated.
   ...(hasMultipleLocales && {
@@ -242,13 +262,20 @@ export default defineConfig({
       locales: i18nLocales,
       routing: {
         prefixDefaultLocale: false,
-        redirectToDefaultLocale: true,
+        redirectToDefaultLocale: false,
       },
     },
-  }),
-  prefetch: {
+ }),
+     prefetch: {
     prefetchAll: true,
     defaultStrategy: 'viewport',
   },
+  viewTransitions: {
+    fallback: 'swap',
+  },
   trailingSlash: 'ignore',
+  experimental: {
+    clientPrerender: false,
+  },
 });
+

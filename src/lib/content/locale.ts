@@ -30,6 +30,9 @@ export interface SlugLocaleInfo {
  * getSlugLocaleInfo('en/tools/getting-started')   // { locale: 'en', localeFreeSlug: 'tools/getting-started' }
  */
 export function getSlugLocaleInfo(slug: string): SlugLocaleInfo {
+  if (!slug) {
+    return { locale: defaultLocale, localeFreeSlug: "" };
+  }
   const firstSlash = slug.indexOf('/');
   if (firstSlash === -1) {
     // No slash → single-segment slug, always default locale
@@ -52,7 +55,7 @@ export function getSlugLocaleInfo(slug: string): SlugLocaleInfo {
  * Get the locale of a blog post.
  */
 export function getPostLocale(post: BlogPost): string {
-  return getSlugLocaleInfo(post.slug).locale;
+  return getSlugLocaleInfo(post.id ?? post.slug ?? '').locale;
 }
 
 /**
@@ -61,7 +64,7 @@ export function getPostLocale(post: BlogPost): string {
  * When slug transliteration is enabled, non-ASCII slugs are converted to romanized form.
  */
 export function getPostSlug(post: BlogPost): string {
-  return post.data.link ?? transliterateSlug(getSlugLocaleInfo(post.slug).localeFreeSlug);
+  return post.data.link ?? transliterateSlug(getSlugLocaleInfo(post.id ?? post.slug ?? '').localeFreeSlug);
 }
 
 /**

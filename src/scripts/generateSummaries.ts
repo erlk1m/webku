@@ -280,20 +280,20 @@ async function main() {
 
     for (let i = 0; i < posts.length; i++) {
       const post = posts[i];
-      const cachedEntry = validCache[post.slug];
+      const cachedEntry = validCache[post.id];
 
       if (cachedEntry && cachedEntry.hash === post.hash) {
         // Use cached summary
-        newEntries[post.slug] = cachedEntry;
+        newEntries[post.id] = cachedEntry;
         cached++;
-        process.stdout.write(`\r  [${i + 1}/${posts.length}] ${chalk.gray('cached')}: ${post.slug.slice(0, 40)}...`);
+        process.stdout.write(`\r  [${i + 1}/${posts.length}] ${chalk.gray('cached')}: ${post.id.slice(0, 40)}...`);
       } else {
         // Generate new summary
-        process.stdout.write(`\r  [${i + 1}/${posts.length}] ${chalk.yellow('generating')}: ${post.slug.slice(0, 40)}...`);
+        process.stdout.write(`\r  [${i + 1}/${posts.length}] ${chalk.yellow('generating')}: ${post.id.slice(0, 40)}...`);
 
         try {
           const summary = await generateSummary(post.text, model);
-          newEntries[post.slug] = {
+          newEntries[post.id] = {
             hash: post.hash,
             title: post.title,
             summary,
@@ -302,11 +302,11 @@ async function main() {
           generated++;
         } catch (error) {
           console.log('');
-          console.error(chalk.red(`  Error generating summary for ${post.slug}:`), error);
+          console.error(chalk.red(`  Error generating summary for ${post.id}:`), error);
           errors++;
           // Keep old cached entry if available
           if (cachedEntry) {
-            newEntries[post.slug] = cachedEntry;
+            newEntries[post.id] = cachedEntry;
           }
         }
       }

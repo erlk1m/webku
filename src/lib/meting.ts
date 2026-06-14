@@ -2,7 +2,7 @@
  * Meting API client — resolves music platform URLs to playable audio streams.
  *
  * Ported from Shoka player.js URL parsing + Meting API integration.
- * Supports NetEase Cloud Music and QQ Music.
+ * Supports NetEase Cloud Music, QQ Music, and direct audio URLs.
  */
 
 const DEFAULT_API = 'https://163.hyc.moe/';
@@ -45,6 +45,18 @@ export function parseMusicUrl(url: string): ParsedUrl | null {
   return null;
 }
 
+/** Check if a string is a direct audio URL (mp3, ogg, wav, flac, etc.) */
+function isDirectAudioUrl(url: string): boolean {
+  return /\.(mp3|ogg|wav|flac|m4a|aac)(\?|$)/i.test(url);
+}
+
+/** Create a MetingSong from a direct audio URL. */
+function toDirectSong(url: string): MetingSong {
+  const filename = url.split('/').pop()?.split('?')[0] ?? 'Unknown';
+  const name = filename.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
+  return { name, artist: 'Unknown', url, pic: '', lrc: '' };
+}
+
 interface CacheEntry {
   data: MetingSong[];
   timestamp: number;
@@ -74,7 +86,7 @@ function setCache(key: string, data: MetingSong[]): void {
     const entry: CacheEntry = { data, timestamp: Date.now() };
     localStorage.setItem(key, JSON.stringify(entry));
   } catch {
-    // localStorage full or unavailable — non-critical, skip silently
+    // localStorage full or unavailable
   }
 }
 
@@ -107,6 +119,9 @@ export async function fetchMeting(server: string, type: string, id: string, apiU
 export async function resolvePlaylist(urls: string[], apiUrl?: string): Promise<MetingSong[]> {
   const results = await Promise.allSettled(
     urls.map((url) => {
+      if (isDirectAudioUrl(url)) {
+        return Promise.resolve([toDirectSong(url)]);
+      }
       const parsed = parseMusicUrl(url);
       if (!parsed) return Promise.resolve([]);
       return fetchMeting(parsed.server, parsed.type, parsed.id, apiUrl);

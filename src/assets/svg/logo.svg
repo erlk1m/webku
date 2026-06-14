@@ -1,10 +1,86 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 44">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 60" fill="none">
   <defs>
-    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#E76E78"/>
+    <linearGradient id="sakura" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFB7C5"/>
+      <stop offset="50%" stop-color="#FF6B8A"/>
       <stop offset="100%" stop-color="#D63965"/>
     </linearGradient>
+    <linearGradient id="petal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFD6E0"/>
+      <stop offset="100%" stop-color="#FF87A8"/>
+    </linearGradient>
+    <radialGradient id="petalCenter" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FF3366" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#FF3366" stop-opacity="0"/>
+    </radialGradient>
   </defs>
-  <text x="0" y="34" font-family="'Courier New', monospace" font-weight="bold" font-size="38" fill="#2d2d2d">erl</text>
-  <text x="87" y="34" font-family="'Courier New', monospace" font-weight="bold" font-size="38" fill="url(#accent)">k1m</text>
+
+  <!-- Sakura Petal 1 - top left -->
+  <g transform="translate(8,2) rotate(-25)" opacity="0.7">
+    <ellipse cx="0" cy="-6" rx="4" ry="7" fill="url(#petal)"/>
+    <ellipse cx="5" cy="-2" rx="4" ry="7" fill="url(#petal)" transform="rotate(72)"/>
+    <ellipse cx="3" cy="5" rx="4" ry="7" fill="url(#petal)" transform="rotate(144)"/>
+    <ellipse cx="-3" cy="5" rx="4" ry="7" fill="url(#petal)" transform="rotate(216)"/>
+    <ellipse cx="-5" cy="-2" rx="4" ry="7" fill="url(#petal)" transform="rotate(288)"/>
+    <circle cx="0" cy="0" r="2.5" fill="url(#petalCenter)"/>
+  </g>
+
+  <!-- Sakura Petal 2 - top right -->
+  <g transform="translate(255,8) rotate(15)" opacity="0.6">
+    <ellipse cx="0" cy="-5" rx="3.5" ry="6" fill="url(#petal)"/>
+    <ellipse cx="4.5" cy="-1.5" rx="3.5" ry="6" fill="url(#petal)" transform="rotate(72)"/>
+    <ellipse cx="2.5" cy="4.5" rx="3.5" ry="6" fill="url(#petal)" transform="rotate(144)"/>
+    <ellipse cx="-2.5" cy="4.5" rx="3.5" ry="6" fill="url(#petal)" transform="rotate(216)"/>
+    <ellipse cx="-4.5" cy="-1.5" rx="3.5" ry="6" fill="url(#petal)" transform="rotate(288)"/>
+    <circle cx="0" cy="0" r="2" fill="url(#petalCenter)"/>
+  </g>
+
+  <!-- Sakura Petal 3 - middle floating -->
+  <g transform="translate(240,42) rotate(40)" opacity="0.5">
+    <ellipse cx="0" cy="-4" rx="3" ry="5" fill="url(#petal)"/>
+    <ellipse cx="3.8" cy="-1.2" rx="3" ry="5" fill="url(#petal)" transform="rotate(72)"/>
+    <ellipse cx="2.2" cy="3.5" rx="3" ry="5" fill="url(#petal)" transform="rotate(144)"/>
+    <ellipse cx="-2.2" cy="3.5" rx="3" ry="5" fill="url(#petal)" transform="rotate(216)"/>
+    <ellipse cx="-3.8" cy="-1.2" rx="3" ry="5" fill="url(#petal)" transform="rotate(288)"/>
+    <circle cx="0" cy="0" r="1.8" fill="url(#petalCenter)"/>
+  </g>
+
+  <!-- Sakura Petal 4 - small floating -->
+  <g transform="translate(220,5) rotate(-10)" opacity="0.4">
+    <ellipse cx="0" cy="-3.5" rx="2.5" ry="4.5" fill="url(#petal)"/>
+    <ellipse cx="3.2" cy="-1" rx="2.5" ry="4.5" fill="url(#petal)" transform="rotate(72)"/>
+    <ellipse cx="2" cy="3" rx="2.5" ry="4.5" fill="url(#petal)" transform="rotate(144)"/>
+    <ellipse cx="-2" cy="3" rx="2.5" ry="4.5" fill="url(#petal)" transform="rotate(216)"/>
+    <ellipse cx="-3.2" cy="-1" rx="2.5" ry="4.5" fill="url(#petal)" transform="rotate(288)"/>
+    <circle cx="0" cy="0" r="1.5" fill="url(#petalCenter)"/>
+  </g>
+
+  <!-- Sakura Petal 5 - tiny accent -->
+  <g transform="translate(268,30) rotate(60)" opacity="0.35">
+    <ellipse cx="0" cy="-3" rx="2" ry="4" fill="url(#petal)"/>
+    <ellipse cx="2.8" cy="-0.9" rx="2" ry="4" fill="url(#petal)" transform="rotate(72)"/>
+    <ellipse cx="1.7" cy="2.5" rx="2" ry="4" fill="url(#petal)" transform="rotate(144)"/>
+    <ellipse cx="-1.7" cy="2.5" rx="2" ry="4" fill="url(#petal)" transform="rotate(216)"/>
+    <ellipse cx="-2.8" cy="-0.9" rx="2" ry="4" fill="url(#petal)" transform="rotate(288)"/>
+    <circle cx="0" cy="0" r="1.2" fill="url(#petalCenter)"/>
+  </g>
+
+  <!-- Falling petal 1 -->
+  <g transform="translate(200,45) rotate(30)" opacity="0.3">
+    <ellipse cx="0" cy="0" rx="2.5" ry="5" fill="url(#petal)" transform="rotate(20)"/>
+  </g>
+
+  <!-- Falling petal 2 -->
+  <g transform="translate(30,50) rotate(-15)" opacity="0.25">
+    <ellipse cx="0" cy="0" rx="2" ry="4" fill="url(#petal)" transform="rotate(-10)"/>
+  </g>
+
+  <!-- Main Text: Erlkim -->
+  <text x="38" y="42" font-family="'Georgia', 'Times New Roman', serif" font-weight="bold" font-size="42" letter-spacing="1">
+    <tspan fill="#2d2d2d">E</tspan><tspan fill="#2d2d2d">r</tspan><tspan fill="#2d2d2d">l</tspan><tspan fill="#2d2d2d">k</tspan><tspan fill="url(#sakura)">i</tspan><tspan fill="url(#sakura)">m</tspan>
+  </text>
+
+  <!-- Underline accent -->
+  <rect x="38" y="48" width="60" height="3" rx="1.5" fill="url(#sakura)" opacity="0.8"/>
+  <rect x="102" y="48" width="40" height="3" rx="1.5" fill="url(#sakura)" opacity="0.4"/>
 </svg>

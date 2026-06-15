@@ -40,43 +40,12 @@ Artikel ini akan membahas cara mengubah TV Box Amlogic Anda menjadi server Linux
 
 ### Chipset yang Didukung Armbian
 
-{% table %}
-- Spesifikasi
-- TV Box Amlogic S905X2
-- Raspberry Pi 4 2GB
----
-- **Harga**
-- Rp 250-350 ribu
-- Rp 600-800 ribu
----
-- **CPU**
-- Quad-core Cortex-A53
-- Quad-core Cortex-A72
----
-- **RAM**
-- 2-4GB DDR3/4
-- 2-8GB LPDDR4
----
-- **Storage**
-- eMMC 8-16GB + MicroSD
-- MicroSD only
----
-- **Ethernet**
-- 100M / Gigabit
-- Gigabit
----
-- **USB**
-- USB 2.0 / 3.0
-- USB 2.0 + 3.0
----
-- **GPIO**
-- Tidak ada
-- 40-pin GPIO
----
-- **Komunitas**
-- Aktif (China/Internasional)
-- Sangat besar
-{% /table %}
+- **S905X** — MXQ Pro 4K, T95X, X96 — RAM 1-2GB, cocok untuk server ringan
+- **S905W** — X96 Mini, T95 Mini — Versi low-power S905X, hemat listrik
+- **S905X2** — X96 Max, HK1 Box — Lebih cepat, USB 3.0, RAM 2-4GB
+- **S912** — T95Z Plus, TX9 Pro — Octa-core, cocok untuk media server
+- **S922X** — Ugoos AM6, Odroid N2+ — Performa tinggi, harga lebih mahal
+- **S905X3** — X96 Air, HK1 X3 — Support mainline kernel modern
 
 ### Cek Chipset TV Box Anda
 
@@ -92,31 +61,13 @@ Sebelum mulai, pastikan chipset TV Box Anda:
 
 ## Alat dan Bahan
 
-{% table %}
-- Item
-- Keterangan
----
-- **TV Box Amlogic**
-- Pastikan chipset didukung
----
-- **MicroSD Card**
-- 16GB atau lebih (Class 10/UHS-I)
----
-- **Card Reader**
-- USB Card Reader
----
-- **Kabel Ethernet**
-- Untuk koneksi network
----
-- **Mouse & Keyboard**
-- Untuk konfigurasi awal (opsional)
----
-- **HDMI Monitor**
-- Untuk melihat proses boot pertama
----
-- **Toothpick / Jarum**
-- Untuk masuk ke recovery/boot mode
-{% /table %}
+- **TV Box Amlogic** — Pastikan chipset didukung
+- **MicroSD Card** — 16GB atau lebih (Class 10/UHS-I)
+- **Card Reader** — USB Card Reader
+- **Kabel Ethernet** — Untuk koneksi network
+- **Mouse & Keyboard** — Untuk konfigurasi awal (opsional)
+- **HDMI Monitor** — Untuk melihat proses boot pertama
+- **Toothpick / Jarum** — Untuk masuk ke recovery/boot mode
 
 ---
 
@@ -155,26 +106,6 @@ lsblk
 # Flash (GANTI sdX dengan device Anda!)
 sudo dd if=Armbian_xxx.img of=/dev/sdX bs=4M status=progress conv=fsyn
 ```
-
-## **Langkah 3: Persiapan Boot dari MicroSD**
-
-TV Box Amlogic tidak akan otomatis boot dari MicroSD. Anda perlu memaksa masuk ke **recovery mode** atau **boot mode**.
-
-### **Metode Toothpick (Paling Umum)**
-
-1. **Cabut power** TV Box
-1. **Masukkan MicroSD** ke slot
-1. **Tekan dan tahan tombol reset** di dalam lubang AV port dengan toothpick/jarum
-1. **Sambil menekan**, colokkan power adapter
-1. **Tahan 5-10 detik** sampai muncul logo Armbian di layar
-1. **Lepaskan tombol**
-
-### **Metode Alternatif**
-
-Jika tidak ada tombol reset:
-
-- Beberapa TV Box bisa boot dari SD dengan **menggunakan app Android** seperti **LibreELEC USB-SD Creator** untuk rewrite bootloader
-- Atau gunakan **Amlogic Burn Card Maker** untuk membuat SD card bootable
 
 > **Catatan**: Jika TV Box tetap boot ke Android, kemungkinan bootloader tidak mendukung SD boot. Solusi: **flash Armbian ke internal eMMC** (dibahas di bagian lanjutan).
 

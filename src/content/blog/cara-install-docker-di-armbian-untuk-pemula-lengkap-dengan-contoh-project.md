@@ -296,9 +296,7 @@ docker compose up -d
 
 Akses UI: `http://IP-BOARD:8123`
 
----
-
-## **Perintah Docker yang Sering Digunakan**
+**Perintah Docker yang Sering Digunakan**
 
 {% table %}
 - Perintah

@@ -1,13 +1,15 @@
 ---
 title: 'Rust dengan Code Preview: Belajar dari Contoh Praktis'
 description: >-
-  Pelajari Rust melalui contoh kode yang mudah dipahami � dari Hello World
-  hingga ownership, borrowing, dan struct.
+  Pelajari Rust melalui contoh kode yang mudah dipahami dari Hello World hingga
+  ownership, borrowing, dan struct.
 date: 2026-06-16T02:11:00.000Z
-tags: []
+tags:
+  - rust
 subtitle: Contoh Kode Rust untuk Pemula dengan Penjelasan Langkah demi Langkah
 catalog: true
-categories: []
+categories:
+  - tutorial
 sticky: false
 draft: false
 tocNumbering: true

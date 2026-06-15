@@ -11,6 +11,7 @@ subtitle: Panduan Komprehensif Rust dari Nol hingga Advanced dengan Code Blocks
 catalog: true
 categories:
   - rust
+  - tutorial
 sticky: false
 draft: false
 tocNumbering: true

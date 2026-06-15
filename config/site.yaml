@@ -400,10 +400,9 @@ navigation:
 #           setel 'none' atau tidak disetel untuk menonaktifkan sistem komentar
 # -----------------------------------------------------------------------------
 comment:
-  provider: waline  # 'remark42' | 'giscus' | 'waline' | 'twikoo' | 'none'
-
+  provider: waline
   waline:
-    envId: https://waline-comment-ten-omega.vercel.app  # ID lingkungan Twikoo (Tencent Cloud) atau alamat lingkungan Vercel (wajib)
+    serverURL: https://waline-comment-ten-omega.vercel.app  # ID lingkungan Twikoo (Tencent Cloud) atau alamat lingkungan Vercel (wajib)
 
 # =============================================================================
 # Analitik (Umami)

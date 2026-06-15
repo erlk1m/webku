@@ -110,7 +110,7 @@ Output yang diharapkan:
 
 **plain**
 
-```
+```plain
 Docker version 27.x.x, build xxxxx
 Docker Compose version v2.x.x
 ```
@@ -195,7 +195,7 @@ Buat folder `html` dan file `index.html`:
 
 **bash**
 
-```
+```plain
 mkdir html
 echo "<h1>Hello from Armbian + Docker!</h1>" > html/index.html
 ```
@@ -290,7 +290,7 @@ Jalankan:
 
 **bash**
 
-```
+```plain
 docker compose up -d
 ```
 
@@ -298,43 +298,19 @@ Akses UI: `http://IP-BOARD:8123`
 
 **Perintah Docker yang Sering Digunakan**
 
-{% table %}
-- Perintah
-- Fungsi
----
-- `docker ps`
-- Lihat container yang berjalan
----
-- `docker ps -a`
-- Lihat semua container (aktif & mati)
----
-- `docker logs CONTAINER`
-- Lihat log container
----
-- `docker stop CONTAINER`
-- Hentikan container
----
-- `docker start CONTAINER`
-- Jalankan container
----
-- `docker rm CONTAINER`
-- Hapus container
----
-- `docker images`
-- Lihat image yang tersedia
----
-- `docker compose down`
-- Hentikan dan hapus container + network
----
-- `docker compose pull`
-- Download image terbaru
----
-- `docker compose up -d`
-- Jalankan container di background
----
-- `docker exec -it CONTAINER bash`
-- Masuk ke shell container
-{% /table %}
+| Perintah | Fungsi |
+| --- | --- |
+| `docker ps` | Lihat container yang berjalan |
+| `docker ps -a` | Lihat semua container (aktif & mati) |
+| `docker logs CONTAINER` | Lihat log container |
+| `docker stop CONTAINER` | Hentikan container |
+| `docker start CONTAINER` | Jalankan container |
+| `docker rm CONTAINER` | Hapus container |
+| `docker images` | Lihat image yang tersedia |
+| `docker compose down` | Hentikan dan hapus container + network |
+| `docker compose pull` | Download image terbaru |
+| `docker compose up -d` | Jalankan container di background |
+| `docker exec -it CONTAINER bash` | Masuk ke shell container |
 
 ## **Troubleshooting**
 

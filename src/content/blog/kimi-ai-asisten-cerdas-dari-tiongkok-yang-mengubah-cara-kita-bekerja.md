@@ -67,32 +67,12 @@ Pengguna dapat mengakses Kimi AI melalui:
 
 ## Perbandingan dengan Asisten AI Lainnya
 
-{% table %}
-- Fitur
-- Kimi AI
-- ChatGPT
-- Claude
----
-- Context Window
-- Sangat besar
-- Besar
-- Sangat besar
----
-- Bahasa Mandarin
-- ⭐⭐⭐
-- ⭐⭐
-- ⭐⭐
----
-- Analisis Dokumen
-- ⭐⭐⭐
-- ⭐⭐⭐
-- ⭐⭐⭐
----
-- Kecepatan
-- ⭐⭐⭐
-- ⭐⭐⭐
-- ⭐⭐⭐
-{% /table %}
+| Fitur | Kimi AI | ChatGPT | Claude |
+| --- | --- | --- | --- |
+| Context Window | Sangat besar | Besar | Sangat besar |
+| Bahasa Mandarin | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ |
+| Analisis Dokumen | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
+| Kecepatan | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
 
 ## Kesimpulan
 

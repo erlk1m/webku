@@ -40,22 +40,12 @@ Jadikan board ARM Anda sebagai cloud storage pribadi di rumah.
 
 ### Tools yang Digunakan
 
-{% table %}
-- Software
-- Fungsi
----
-- **Samba**
-- Sharing folder ke Windows/Mac/Linux
----
-- **OpenMediaVault (OMV)**
-- Web-based NAS management
----
-- **Syncthing**
-- Sinkronisasi file antar device
----
-- **Nextcloud**
-- Cloud storage dengan web interface
-{% /table %}
+| Software | Fungsi |
+| --- | --- |
+| **Samba** | Sharing folder ke Windows/Mac/Linux |
+| **OpenMediaVault (OMV)** | Web-based NAS management |
+| **Syncthing** | Sinkronisasi file antar device |
+| **Nextcloud** | Cloud storage dengan web interface |
 
 ### Langkah Singkat
 
@@ -165,27 +155,12 @@ Streaming film, musik, dan foto koleksi pribadi ke TV, HP, atau laptop.
 
 **Table**
 
-{% table %}
-- **Fitur**
-- **Jellyfin**
-- **Plex**
----
-- **Harga**
-- Gratis & open-source
-- Freemium (fitur premium berbayar)
----
-- **Privasi**
-- 100% lokal
-- Memerlukan akun cloud
----
-- **Transcoding**
-- Tergantung hardware board
-- Sama
----
-- **Plugin**
-- Aktif dikembangkan komunitas
-- Lebih mature
-{% /table %}
+| **Fitur** | **Jellyfin** | **Plex** |
+| --- | --- | --- |
+| **Harga** | Gratis & open-source | Freemium (fitur premium berbayar) |
+| **Privasi** | 100% lokal | Memerlukan akun cloud |
+| **Transcoding** | Tergantung hardware board | Sama |
+| **Plugin** | Aktif dikembangkan komunitas | Lebih mature |
 
 ### **Install Jellyfin**
 
@@ -220,22 +195,12 @@ Host website pribadi, blog, atau aplikasi web di board ARM Anda sendiri.
 
 **Table**
 
-{% table %}
-- **Komponen**
-- **Fungsi**
----
-- **Nginx Proxy Manager**
-- Reverse proxy + SSL otomatis (Let's Encrypt)
----
-- **Docker + Portainer**
-- Manajemen container via GUI
----
-- **WordPress / Ghost**
-- CMS untuk blog
----
-- **Uptime Kuma**
-- Monitoring uptime website
-{% /table %}
+| **Komponen** | **Fungsi** |
+| --- | --- |
+| **Nginx Proxy Manager** | Reverse proxy + SSL otomatis (Let's Encrypt) |
+| **Docker + Portainer** | Manajemen container via GUI |
+| **WordPress / Ghost** | CMS untuk blog |
+| **Uptime Kuma** | Monitoring uptime website |
 
 ### **Setup dengan Docker Compose**
 
@@ -297,37 +262,13 @@ sudo docker-compose up -d
 
 **Table**
 
-{% table %}
-- **Project**
-- **CPU Usage**
-- **RAM Usage**
-- **Cocok untuk Board**
----
-- NAS (Samba)
-- Rendah
-- 100-200 MB
-- Orange Pi Zero 2
----
-- Pi-hole
-- Sangat rendah
-- 50-100 MB
-- NanoPi NEO
----
-- Home Assistant
-- Sedang
-- 300-500 MB
-- Orange Pi 3 LTS
----
-- Jellyfin
-- Tinggi (saat transcode)
-- 500 MB - 1 GB
-- Orange Pi 5 / RK3588
----
-- Web Server
-- Rendah-Sedang
-- 200-400 MB
-- Banana Pi M5
-{% /table %}
+| **Project** | **CPU Usage** | **RAM Usage** | **Cocok untuk Board** |
+| --- | --- | --- | --- |
+| NAS (Samba) | Rendah | 100-200 MB | Orange Pi Zero 2 |
+| Pi-hole | Sangat rendah | 50-100 MB | NanoPi NEO |
+| Home Assistant | Sedang | 300-500 MB | Orange Pi 3 LTS |
+| Jellyfin | Tinggi (saat transcode) | 500 MB - 1 GB | Orange Pi 5 / RK3588 |
+| Web Server | Rendah-Sedang | 200-400 MB | Banana Pi M5 |
 
 > **Catatan**: Board dengan RAM 1GB masih cukup untuk project 1-3. Untuk Jellyfin dan web server, disarankan minimal **2GB RAM**.
 

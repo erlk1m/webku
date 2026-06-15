@@ -1,6 +1,6 @@
 import { defineCollection, z } from 'astro:content';
-import { glob } from 'astro/loaders';
 import { parseDateInSiteTimezone, reinterpretUtcAsTimezone } from '@lib/date';
+import { glob } from 'astro/loaders';
 import type { BlogSchema, BlogSchemaInput } from 'types/blog';
 
 const dateInSiteTimezone = z
@@ -15,7 +15,7 @@ const dateInSiteTimezone = z
 
 const blogCollection = defineCollection({
   loader: glob({
-    pattern: '**/*.{md,mdx}',
+    pattern: '**/*.{md,mdx,mdoc}',
     base: './src/content/blog',
   }),
   schema: z.object({

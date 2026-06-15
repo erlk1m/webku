@@ -20,6 +20,7 @@ import Sonda from 'sonda/astro';
 import { loadEnv } from 'vite';
 import svgr from 'vite-plugin-svgr';
 import YAML from 'yaml';
+import { remarkMarkdocTable } from './src/lib/markdown/remark-markdoc-table.ts';
 import { rehypeEncryptedBlock } from './src/lib/markdown/rehype-encrypted-block.ts';
 import { rehypeEncryptedPost } from './src/lib/markdown/rehype-encrypted-post.ts';
 import { rehypeImagePlaceholder } from './src/lib/markdown/rehype-image-placeholder.ts';
@@ -119,6 +120,7 @@ const remarkPlugins = [];
     ]);
   }
 }
+remarkPlugins.push(remarkMarkdocTable);
 // remarkMath must run BEFORE ruby/spoiler/effects so that $...$ content
 // is already parsed into inlineMath/math nodes and won't be touched by text-scanning plugins.
 if (contentConfig.enableMath !== false) remarkPlugins.push(remarkMath);

@@ -121,13 +121,9 @@ sudo dd if=Armbian_xxx.img of=/dev/sdX bs=4M status=progress conv=fsyn
 
 ### **Login Default**
 
-{% table %}
-- Username
-- Password
----
-- `root`
-- `1234`
-{% /table %}
+| Username | Password |
+| --- | --- |
+| `root` | `1234` |
 
 ### **First Boot Wizard**
 
@@ -420,43 +416,16 @@ Jika tidak terdeteksi, cari driver spesifik di forum Armbian atau gunakan **USB 
 
 ## **Perbandingan TV Box Amlogic vs Raspberry Pi**
 
-{% table %}
-- Spesifikasi
-- TV Box Amlogic S905X2
-- Raspberry Pi 4 2GB
----
-- **Harga**
-- Rp 250-350 ribu
-- Rp 600-800 ribu
----
-- **CPU**
-- Quad-core Cortex-A53
-- Quad-core Cortex-A72
----
-- **RAM**
-- 2-4GB DDR3/4
-- 2-8GB LPDDR4
----
-- **Storage**
-- eMMC 8-16GB + MicroSD
-- MicroSD only
----
-- **Ethernet**
-- 100M / Gigabit
-- Gigabit
----
-- **USB**
-- USB 2.0 / 3.0
-- USB 2.0 + 3.0
----
-- **GPIO**
-- Tidak ada
-- 40-pin GPIO
----
-- **Komunitas**
-- Aktif (China/Internasional)
-- Sangat besar
-{% /table %}
+| Spesifikasi | TV Box Amlogic S905X2 | Raspberry Pi 4 2GB |
+| --- | --- | --- |
+| **Harga** | Rp 250-350 ribu | Rp 600-800 ribu |
+| **CPU** | Quad-core Cortex-A53 | Quad-core Cortex-A72 |
+| **RAM** | 2-4GB DDR3/4 | 2-8GB LPDDR4 |
+| **Storage** | eMMC 8-16GB + MicroSD | MicroSD only |
+| **Ethernet** | 100M / Gigabit | Gigabit |
+| **USB** | USB 2.0 / 3.0 | USB 2.0 + 3.0 |
+| **GPIO** | Tidak ada | 40-pin GPIO |
+| **Komunitas** | Aktif (China/Internasional) | Sangat besar |
 
 > **Kesimpulan**: Jika Anda butuh **server headless tanpa GPIO**, TV Box Amlogic adalah pilihan **jauh lebih hemat biaya**. Raspberry Pi unggul jika butuh GPIO, kamera, atau HAT.
 

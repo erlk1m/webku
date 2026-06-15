@@ -10,7 +10,7 @@ subtitle: Contoh Kode Rust untuk Pemula dengan Penjelasan Langkah demi Langkah
 catalog: true
 categories:
   - tutorial
-sticky: false
+sticky: true
 draft: false
 tocNumbering: true
 excludeFromSummary: false

@@ -14,10 +14,10 @@ subtitle: >-
 catalog: true
 categories:
   - tutorial
-sticky: false
+sticky: true
 draft: false
 tocNumbering: true
-excludeFromSummary: true
+excludeFromSummary: false
 math: false
 quiz: false
 keywords: []

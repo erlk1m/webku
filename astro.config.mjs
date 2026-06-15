@@ -279,7 +279,7 @@ export default defineConfig({
     },
  }),
      prefetch: {
-    prefetchAll: true,
+    prefetchAll: false,
     defaultStrategy: 'viewport',
   },
   viewTransitions: {

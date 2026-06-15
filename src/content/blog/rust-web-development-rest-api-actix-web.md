@@ -13,12 +13,12 @@ subtitle: >-
 catalog: true
 categories:
   - tutorial
-sticky: false
+sticky: true
 draft: false
 tocNumbering: true
-excludeFromSummary: false
-math: false
-quiz: false
+excludeFromSummary: true
+math: true
+quiz: true
 keywords: []
 ---
 Rust bukan hanya untuk sistem programming dan CLI tools — ia juga sangat powerful untuk web development. Dengan framework seperti Actix-web, kamu bisa membangun REST API yang cepat, aman, dan scalable. Artikel ini membawa kamu membangun API lengkap dari nol.

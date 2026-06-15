@@ -287,6 +287,6 @@ export default defineConfig({
   },
   trailingSlash: 'ignore',
   experimental: {
-    clientPrerender: always,
+    clientPrerender: 'always',
   },
 });

@@ -286,7 +286,5 @@ export default defineConfig({
     fallback: 'swap',
   },
   trailingSlash: 'ignore',
-  // experimental: {
-//   clientPrerender: 'always',
-// },
+  
 });

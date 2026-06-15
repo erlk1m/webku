@@ -17,7 +17,7 @@ categories:
 sticky: false
 draft: false
 tocNumbering: true
-excludeFromSummary: false
+excludeFromSummary: true
 math: false
 quiz: false
 keywords: []

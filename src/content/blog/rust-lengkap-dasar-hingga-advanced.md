@@ -5,10 +5,12 @@ description: >-
   traits, generics, error handling, concurrency, testing, dan macros dengan code
   blocks lengkap.
 date: 2026-06-16T02:31:00.000Z
-tags: []
+tags:
+  - rust
 subtitle: Panduan Komprehensif Rust dari Nol hingga Advanced dengan Code Blocks
 catalog: true
-categories: []
+categories:
+  - rust
 sticky: false
 draft: false
 tocNumbering: true

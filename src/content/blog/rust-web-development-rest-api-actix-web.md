@@ -5,12 +5,14 @@ description: >-
   handler, JSON, middleware, error handling, dan database integration � lengkap
   dengan code blocks.
 date: 2026-06-16T02:50:00.000Z
-tags: []
+tags:
+  - rust
 subtitle: >-
   Bangun Web API Production-Ready dengan Rust, Actix-web, dan PostgreSQL Langkah
   demi Langkah
 catalog: true
-categories: []
+categories:
+  - tutorial
 sticky: false
 draft: false
 tocNumbering: true

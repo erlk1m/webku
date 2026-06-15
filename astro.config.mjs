@@ -194,7 +194,8 @@ export default defineConfig({
     },
   },
   integrations: [
-    ...(import.meta.env.DEV ? [keystatic(), markdoc()] : []),
+    markdoc(),
+    ...(import.meta.env.DEV ? [keystatic()] : []),
     react(),
     sitemap(),
     icon({

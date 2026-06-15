@@ -121,11 +121,9 @@ sudo dd if=Armbian_xxx.img of=/dev/sdX bs=4M status=progress conv=fsyn
 
 ### **Login Default**
 
-**Table**
-
 {% table %}
-- **Username**
-- **Password**
+- Username
+- Password
 ---
 - `root`
 - `1234`
@@ -422,12 +420,10 @@ Jika tidak terdeteksi, cari driver spesifik di forum Armbian atau gunakan **USB 
 
 ## **Perbandingan TV Box Amlogic vs Raspberry Pi**
 
-**Table**
-
 {% table %}
-- **Spesifikasi**
-- **TV Box Amlogic S905X2**
-- **Raspberry Pi 4 2GB**
+- Spesifikasi
+- TV Box Amlogic S905X2
+- Raspberry Pi 4 2GB
 ---
 - **Harga**
 - Rp 250-350 ribu

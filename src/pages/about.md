@@ -1,34 +1,32 @@
 ---
 layout: ../layouts/PageLayout.astro
 title: "About"
-coverTitle: "关于我"
+coverTitle: "Tentang Saya"
 date: 2025-01-03 01:01:33
-description: "关于我？"
+description: "Tentang Erlk1m"
 ---
 
-## 你好，这里是余弦
+## Hai, saya Erlk1m
 
-[![github badge](https://img.shields.io/badge/dynamic/json?color=blue&label=Github&query=%24.data.totalSubs&url=https%3A%2F%2Fapi.spencerwoo.com%2Fsubstats%2F%3Fsource%3Dgithub%26queryKey%3Dyusixian)](https://github.com/yusixian)
+[![github badge](https://img.shields.io/badge/dynamic/json?color=blue&label=Github&query=%24.data.totalSubs&url=https%3A%2F%2Fapi.spencerwoo.com%2Fsubstats%2F%3Fsource%3Dgithub%26queryKey%3Derlk1m)](https://github.com/erlk1m)
 
-cosine = 余弦 = cos
+Blog pribadi berbasis Armbian & teknologi Linux.
 
-愿热情永存，愿热爱不灭，愿生活无憾
+> Jangan pernah berhenti belajar \
+> Karena hidup tidak pernah berhenti mengajarkan \
+> Sesuatu yang baru setiap harinya
 
-> 我们 都只是无名之辈 \
-> 做你自己最喜欢的事 \
-> 像花一样 肆意绽放 \
-> 不去管 有没有人欣赏
+### Tentang Saya
 
-### 找到我
+- Suka eksplorasi **Armbian** dan **single board computer**
+- Tertarik dengan **web development** dan **self-hosting**
+- Menulis catatan harian tentang teknologi dan kehidupan
 
-个人 Telegram 前端频道：日常碎碎念，偶尔掉落优质前端博文推荐、学习资源等
+### Temukan Saya
 
-https://t.me/cosine_front_end
+- GitHub: [erlk1m](https://github.com/erlk1m)
+- Email: email@kamu.com
 
-Gitbook 前端学习记录
+[![GitHub Stats](https://git-stats.cosine.ren/api?username=erlk1m&theme=dark&show_icons=true&hide_border=true)](https://github.com/anuraghazra/github-readme-stats)
 
-https://book.cosine.ren/
-
-[![GitHub State](https://git-stats.cosine.ren/api?username=yusixian&theme=dark&show_icons=true&hide_border=true)](https://github.com/anuraghazra/github-readme-stats)
-
-[![GitHub Streak](https://github-readme-streak-stats-rust-tau.vercel.app?user=yusixian&theme=dark&date_format=%5BY%20%5DM%20&hide_border=true)](https://git.io/streak-stats)
+[![GitHub Streak](https://github-readme-streak-stats-rust-tau.vercel.app?user=erlk1m&theme=dark&date_format=%5BY%20%5DM%20&hide_border=true)](https://git.io/streak-stats)

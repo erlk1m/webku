@@ -4,10 +4,12 @@ description: >-
   Rust adalah bahasa pemrograman sistem modern yang menawarkan keamanan memori
   tanpa garbage collector, concurrency yang aman, dan performa setara C/C++.
 date: 2026-06-16T02:06:00.000Z
-tags: []
+tags:
+  - rust
 subtitle: Panduan Lengkap untuk Pemula yang Ingin Mulai Belajar Rust
 catalog: true
-categories: []
+categories:
+  - pengetahuan
 sticky: false
 draft: false
 tocNumbering: true

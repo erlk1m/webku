@@ -33,34 +33,16 @@ Dengan lebih dari **1 triliun parameter total** namun hanya mengaktifkan **42 mi
 
 ## Spesifikasi Utama
 
-{% table %}
-- Spesifikasi
-- Detail
----
-- Total Parameter
-- 1.02T (Mixture-of-Experts)
----
-- Parameter Aktif
-- 42B per forward pass
----
-- Context Window
-- 1M token
----
-- Arsitektur
-- Hybrid Attention (SWA + GA, rasio 6:1)
----
-- Multi-Token Prediction
-- 3 layer MTP (triple output speed)
----
-- Pelatihan
-- 27T token, FP8 mixed precision
----
-- Lisensi
-- MIT (open weights)
----
-- Harga API
-- $1.00 input / $3.00 output per 1M token
-{% /table %}
+| Spesifikasi | Detail |
+| --- | --- |
+| Total Parameter | 1.02T (Mixture-of-Experts) |
+| Parameter Aktif | 42B per forward pass |
+| Context Window | 1M token |
+| Arsitektur | Hybrid Attention (SWA + GA, rasio 6:1) |
+| Multi-Token Prediction | 3 layer MTP (triple output speed) |
+| Pelatihan | 27T token, FP8 mixed precision |
+| Lisensi | MIT (open weights) |
+| Harga API | $1.00 input / $3.00 output per 1M token |
 
 ---
 
@@ -75,51 +57,18 @@ MiMo V2.5 Pro menggunakan arsitektur **hybrid attention** yang menggabungkan dua
 
 Dengan rasio 6:1 (SWA:GA), penyimpanan KV-cache berkurang hampir **7x** tanpa mengorbankan performa konteks panjang.
 
-{% table %}
-- Komponen Arsitektur
-- MiMo V2.5 Pro
-- MiMo V2.5
----
-- Total Parameter
-- 1.02T
-- 310B
----
-- Parameter Aktif
-- 42B
-- 15B
----
-- Hidden Size
-- 6144
-- 4096
----
-- Jumlah Layer
-- 70 (1 dense + 69 MoE)
-- 48 (1 dense + 47 MoE)
----
-- Full Attention Layer
-- 10
-- 9
----
-- SWA Layer
-- 60
-- 39
----
-- Attention Heads
-- 128
-- 64
----
-- KV Heads
-- 8 (GQA)
-- 8 (GA) / 4 (SWA)
----
-- Routed Experts
-- 384
-- 256
----
-- Expert per Token
-- 8
-- 8
-{% /table %}
+| Komponen Arsitektur | MiMo V2.5 Pro | MiMo V2.5 |
+| --- | --- | --- |
+| Total Parameter | 1.02T | 310B |
+| Parameter Aktif | 42B | 15B |
+| Hidden Size | 6144 | 4096 |
+| Jumlah Layer | 70 (1 dense + 69 MoE) | 48 (1 dense + 47 MoE) |
+| Full Attention Layer | 10 | 9 |
+| SWA Layer | 60 | 39 |
+| Attention Heads | 128 | 64 |
+| KV Heads | 8 (GQA) | 8 (GA) / 4 (SWA) |
+| Routed Experts | 384 | 256 |
+| Expert per Token | 8 | 8 |
 
 ### Multi-Token Prediction (MTP)
 
@@ -131,99 +80,33 @@ Dengan **3 lightweight MTP modules** menggunakan dense FFN, kecepatan output men
 
 ### Artificial Analysis Intelligence Index
 
-{% table %}
-- Model
-- Intelligence Index
-- Biaya Run
-- Output Token
----
-- MiMo V2.5 Pro
-- 54
-- $462
-- ~92M
----
-- Kimi K2.6
-- 54
-- $948
-- ~170M
----
-- GLM-5.1
-- —
-- $544
-- ~110M
-{% /table %}
+| Model | Intelligence Index | Biaya Run | Output Token |
+| --- | --- | --- | --- |
+| MiMo V2.5 Pro | 54 | $462 | ~92M |
+| Kimi K2.6 | 54 | $948 | ~170M |
+| GLM-5.1 | — | $544 | ~110M |
 
 ### Kemampuan Agentic (GDPval-AA)
 
-{% table %}
-- Peringkat
-- Model
-- Skor GDPval-AA
----
-- 1
-- MiMo V2.5 Pro
-- 1578
----
-- 2
-- DeepSeek V4 Pro
-- 1554
----
-- 3
-- GLM-5.1
-- 1535
----
-- 4
-- MiniMax-M2.7
-- 1514
----
-- 5
-- Kimi K2.6
-- 1484
-{% /table %}
+| Peringkat | Model | Skor GDPval-AA |
+| --- | --- | --- |
+| 1 | MiMo V2.5 Pro | 1578 |
+| 2 | DeepSeek V4 Pro | 1554 |
+| 3 | GLM-5.1 | 1535 |
+| 4 | MiniMax-M2.7 | 1514 |
+| 5 | Kimi K2.6 | 1484 |
 
 ### Benchmark Base Model
 
-{% table %}
-- Kategori
-- Benchmark
-- MiMo V2.5 Pro
-- MiMo V2.5
----
-- General
-- BBH (3-shot)
-- 88.4
-- 87.2
----
-- General
-- MMLU (5-shot)
-- 89.4
-- 86.3
----
-- Math
-- GSM8K (8-shot)
-- 99.6
-- 83.3
----
-- Math
-- MATH (4-shot)
-- 86.2
-- 67.7
----
-- Code
-- HumanEval+ (1-shot)
-- 75.6
-- 71.3
----
-- Code
-- LiveCodeBench v6
-- 39.6
-- 35.5
----
-- Chinese
-- C-Eval (5-shot)
-- 91.5
-- 88.6
-{% /table %}
+| Kategori | Benchmark | MiMo V2.5 Pro | MiMo V2.5 |
+| --- | --- | --- | --- |
+| General | BBH (3-shot) | 88.4 | 87.2 |
+| General | MMLU (5-shot) | 89.4 | 86.3 |
+| Math | GSM8K (8-shot) | 99.6 | 83.3 |
+| Math | MATH (4-shot) | 86.2 | 67.7 |
+| Code | HumanEval+ (1-shot) | 75.6 | 71.3 |
+| Code | LiveCodeBench v6 | 39.6 | 35.5 |
+| Chinese | C-Eval (5-shot) | 91.5 | 88.6 |
 
 ---
 
@@ -245,123 +128,38 @@ Dengan **3 lightweight MTP modules** menggunakan dense FFN, kecepatan output men
 
 ## Perbandingan dengan Model Lain
 
-{% table %}
-- Aspek
-- MiMo V2.5 Pro
-- Claude Opus 4.6
-- DeepSeek V4 Pro
-- GPT-5.2
----
-- Total Parameter
-- 1.02T
-- Proprietary
-- 1.6T
-- Proprietary
----
-- Active Parameter
-- 42B
-- Proprietary
-- 49B
-- Proprietary
----
-- Context Window
-- 1M token
-- 200K
-- 128K
-- 128K
----
-- GDPval-AA
-- 1578
-- —
-- 1554
-- —
----
-- ClawEval
-- 61.5
-- 66.3
-- —
-- 50.0
----
-- PinchBench
-- 81.0
-- 81.5
-- —
-- 77.0
----
-- Harga/1M token
-- $1 / $3
-- $15 / $75
-- $0.27 / $1.10
-- $2 / $8
----
-- Lisensi
-- MIT (open)
-- Proprietary
-- MIT (open)
-- Proprietary
-{% /table %}
+| Aspek | MiMo V2.5 Pro | Claude Opus 4.6 | DeepSeek V4 Pro | GPT-5.2 |
+| --- | --- | --- | --- | --- |
+| Total Parameter | 1.02T | Proprietary | 1.6T | Proprietary |
+| Active Parameter | 42B | Proprietary | 49B | Proprietary |
+| Context Window | 1M token | 200K | 128K | 128K |
+| GDPval-AA | 1578 | — | 1554 | — |
+| ClawEval | 61.5 | 66.3 | — | 50.0 |
+| PinchBench | 81.0 | 81.5 | — | 77.0 |
+| Harga/1M token | $1 / $3 | $15 / $75 | $0.27 / $1.10 | $2 / $8 |
+| Lisensi | MIT (open) | Proprietary | MIT (open) | Proprietary |
 
 ---
 
 ## Long Context: Performa di 1 Juta Token
 
-{% table %}
-- Panjang Konteks
-- MiMo V2.5 Pro (BFS)
-- MiMo V2.5 Pro (Parents)
-- MiMo V2 Pro (BFS)
-- MiMo V2 Pro (Parents)
----
-- 32K
-- Tinggi
-- Tinggi
-- Tinggi
-- Tinggi
----
-- 128K
-- Tinggi
-- Tinggi
-- Mulai turun
-- Mulai turun
----
-- 512K
-- 0.56
-- 0.92
-- 0.00
-- 0.00
----
-- 1M
-- 0.37
-- 0.62
-- 0.00
-- 0.00
-{% /table %}
+| Panjang Konteks | MiMo V2.5 Pro (BFS) | MiMo V2.5 Pro (Parents) | MiMo V2 Pro (BFS) | MiMo V2 Pro (Parents) |
+| --- | --- | --- | --- | --- |
+| 32K | Tinggi | Tinggi | Tinggi | Tinggi |
+| 128K | Tinggi | Tinggi | Mulai turun | Mulai turun |
+| 512K | 0.56 | 0.92 | 0.00 | 0.00 |
+| 1M | 0.37 | 0.62 | 0.00 | 0.00 |
 
 ---
 
 ## Model Keluarga MiMo V2.5
 
-{% table %}
-- Model
-- Tanggal Rilis
-- Keunggulan Utama
----
-- MiMo V2.5 Pro
-- 22 April 2026
-- Flagship, agentic terkuat, 1T params
----
-- MiMo V2.5
-- 23 April 2026
-- Multimodal native, 310B params
----
-- MiMo V2.5 TTS
-- 23 April 2026
-- Text-to-speech, voice cloning
----
-- MiMo V2.5 ASR
-- 2 Juni 2026
-- Speech recognition, dialek Tiongkok
-{% /table %}
+| Model | Tanggal Rilis | Keunggulan Utama |
+| --- | --- | --- |
+| MiMo V2.5 Pro | 22 April 2026 | Flagship, agentic terkuat, 1T params |
+| MiMo V2.5 | 23 April 2026 | Multimodal native, 310B params |
+| MiMo V2.5 TTS | 23 April 2026 | Text-to-speech, voice cloning |
+| MiMo V2.5 ASR | 2 Juni 2026 | Speech recognition, dialek Tiongkok |
 
 ---
 
@@ -390,61 +188,25 @@ print(response.choices[0].message.content)
 
 ### **Self-Hosting Requirements**
 
-{% table %}
-- **Kebutuhan**
-- **Minimum**
-- **Direkomendasikan**
----
-- GPU
-- 4x A100 80GB
-- 8x H100 80GB
----
-- RAM
-- 128GB
-- 256GB
----
-- Storage
-- 2TB NVMe
-- 4TB NVMe
----
-- Framework
-- vLLM / SGLang
-- vLLM dengan MTP support
-{% /table %}
+| **Kebutuhan** | **Minimum** | **Direkomendasikan** |
+| --- | --- | --- |
+| GPU | 4x A100 80GB | 8x H100 80GB |
+| RAM | 128GB | 256GB |
+| Storage | 2TB NVMe | 4TB NVMe |
+| Framework | vLLM / SGLang | vLLM dengan MTP support |
 
 ---
 
 ## **Ekosistem dan Integrasi**
 
-{% table %}
-- **Framework**
-- **Tipe**
-- **Status**
----
-- OpenClaw
-- General-purpose agent
-- Partner resmi
----
-- OpenCode
-- Coding agent
-- Partner resmi
----
-- KiloCode
-- Coding agent
-- Partner resmi
----
-- Claude Code
-- Coding harness
-- Didukung resmi
----
-- Blackbox
-- AI coding
-- Partner resmi
----
-- Cline
-- VS Code agent
-- Partner resmi
-{% /table %}
+| **Framework** | **Tipe** | **Status** |
+| --- | --- | --- |
+| OpenClaw | General-purpose agent | Partner resmi |
+| OpenCode | Coding agent | Partner resmi |
+| KiloCode | Coding agent | Partner resmi |
+| Claude Code | Coding harness | Didukung resmi |
+| Blackbox | AI coding | Partner resmi |
+| Cline | VS Code agent | Partner resmi |
 
 ---
 

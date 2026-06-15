@@ -102,6 +102,7 @@ const contentConfig = yamlConfig.content || {};
 // remarkShokaPreprocess MUST be first: it re-parses raw text to fix GFM/remark conflicts
 // (+++, ~sub~, {% links %} YAML etc.) before any AST-level plugin runs.
 const remarkPlugins = [];
+remarkPlugins.push(remarkMarkdocTable);
 {
   const needsPreprocess =
     contentConfig.enableShokaContainers !== false ||
@@ -120,7 +121,6 @@ const remarkPlugins = [];
     ]);
   }
 }
-remarkPlugins.push(remarkMarkdocTable);
 // remarkMath must run BEFORE ruby/spoiler/effects so that $...$ content
 // is already parsed into inlineMath/math nodes and won't be touched by text-scanning plugins.
 if (contentConfig.enableMath !== false) remarkPlugins.push(remarkMath);

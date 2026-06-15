@@ -41,33 +41,41 @@ Artikel ini akan membahas cara mengubah TV Box Amlogic Anda menjadi server Linux
 ### Chipset yang Didukung Armbian
 
 {% table %}
-- Chipset
-- Contoh TV Box
-- Keterangan
+- Spesifikasi
+- TV Box Amlogic S905X2
+- Raspberry Pi 4 2GB
 ---
-- **S905X**
-- MXQ Pro 4K, T95X, X96
-- RAM 1-2GB, cocok untuk server ringan
+- **Harga**
+- Rp 250-350 ribu
+- Rp 600-800 ribu
 ---
-- **S905W**
-- X96 Mini, T95 Mini
-- Versi low-power S905X, hemat listrik
+- **CPU**
+- Quad-core Cortex-A53
+- Quad-core Cortex-A72
 ---
-- **S905X2**
-- X96 Max, HK1 Box
-- Lebih cepat, USB 3.0, RAM 2-4GB
+- **RAM**
+- 2-4GB DDR3/4
+- 2-8GB LPDDR4
 ---
-- **S912**
-- T95Z Plus, TX9 Pro
-- Octa-core, cocok untuk media server
+- **Storage**
+- eMMC 8-16GB + MicroSD
+- MicroSD only
 ---
-- **S922X**
-- Ugoos AM6, Odroid N2+
-- Performa tinggi, harga lebih mahal
+- **Ethernet**
+- 100M / Gigabit
+- Gigabit
 ---
-- **S905X3**
-- X96 Air, HK1 X3
-- Support mainline kernel modern
+- **USB**
+- USB 2.0 / 3.0
+- USB 2.0 + 3.0
+---
+- **GPIO**
+- Tidak ada
+- 40-pin GPIO
+---
+- **Komunitas**
+- Aktif (China/Internasional)
+- Sangat besar
 {% /table %}
 
 ### Cek Chipset TV Box Anda

@@ -300,11 +300,9 @@ Akses UI: `http://IP-BOARD:8123`
 
 ## **Perintah Docker yang Sering Digunakan**
 
-**Table**
-
 {% table %}
-- **Perintah**
-- **Fungsi**
+- Perintah
+- Fungsi
 ---
 - `docker ps`
 - Lihat container yang berjalan
@@ -339,8 +337,6 @@ Akses UI: `http://IP-BOARD:8123`
 - `docker exec -it CONTAINER bash`
 - Masuk ke shell container
 {% /table %}
-
----
 
 ## **Troubleshooting**
 

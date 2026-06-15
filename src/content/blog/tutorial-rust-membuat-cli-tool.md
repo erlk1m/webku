@@ -5,12 +5,15 @@ description: >-
   parsing argument, membaca file, dan menampilkan output � lengkap dengan code
   blocks.
 date: 2026-06-16T02:35:00.000Z
-tags: []
+tags:
+  - rust
+  - cli
 subtitle: >-
   Project-Based Learning: Bangun CLI Tool Pertamamu dengan Rust Langkah demi
   Langkah
 catalog: true
-categories: []
+categories:
+  - tutorial
 sticky: false
 draft: false
 tocNumbering: true

@@ -1,5 +1,5 @@
 ---
-title: panduan-astro-untuk-pemula
+title: Panduan Astro Untuk Pemula
 description: Panduan lengkap belajar Astro framework untuk pemula
 date: 2026-06-15T01:54:00.000Z
 updated: 2026-06-15T01:54:00.000Z

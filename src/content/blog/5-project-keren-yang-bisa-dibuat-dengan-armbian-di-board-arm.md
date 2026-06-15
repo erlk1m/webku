@@ -18,7 +18,6 @@ math: false
 quiz: false
 keywords: []
 ---
-````
 # 5 Project Keren yang Bisa Dibuat dengan Armbian di Board ARM
 
 ## Pendahuluan
@@ -27,6 +26,7 @@ Setelah berhasil menginstall Armbian di board ARM seperti Orange Pi, NanoPi, ata
 
 Board ARM yang menjalankan Armbian sebenarnya adalah **mini komputer Linux** yang sangat powerful. Dengan konsumsi daya rendah (biasanya 5-15 watt), board ini bisa berjalan 24/7 tanpa khawatir tagihan listrik membengkak. Berikut adalah **5 project praktis** yang bisa Anda bangun dengan Armbian.
 
+---
 
 ## Project 1: Personal NAS (Network Attached Storage)
 
@@ -40,12 +40,22 @@ Jadikan board ARM Anda sebagai cloud storage pribadi di rumah.
 
 ### Tools yang Digunakan
 
-| Software | Fungsi |
-|----------|--------|
-| **Samba** | Sharing folder ke Windows/Mac/Linux |
-| **OpenMediaVault (OMV)** | Web-based NAS management |
-| **Syncthing** | Sinkronisasi file antar device |
-| **Nextcloud** | Cloud storage dengan web interface |
+{% table %}
+- Software
+- Fungsi
+---
+- **Samba**
+- Sharing folder ke Windows/Mac/Linux
+---
+- **OpenMediaVault (OMV)**
+- Web-based NAS management
+---
+- **Syncthing**
+- Sinkronisasi file antar device
+---
+- **Nextcloud**
+- Cloud storage dengan web interface
+{% /table %}
 
 ### Langkah Singkat
 
@@ -69,12 +79,10 @@ directory mask = 0777
 public = yes
 
 # Restart Samba
-sudo systemctl restart smbd
-````
+sudo systemctl restart smb
+```
 
-> **Tips**: Tambahkan hard disk USB 3.0 eksternal untuk kapasitas besar. Format dengan `ext4` agar lebih cepat dan stabil.
-
----
+> **Tips**: Tambahkan hard disk USB 3.0 eksternal untuk kapasitas besar. Format dengan `ext4` agar lebih cepat dan stabil.\
 
 ## **Project 2: Pi-hole — Ad Blocker untuk Seluruh Jaringan**
 

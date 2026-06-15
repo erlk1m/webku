@@ -1,0 +1,432 @@
+---
+title: Setup Home Server Lengkap dengan Armbian + Docker Compose
+description: >-
+  Panduan membangun home server all-in-one dengan Armbian menggunakan Docker
+  Compose. Install Pi-hole, Jellyfin, dan File Browser dalam satu board ARM.
+date: 2026-06-16T05:01:00.000Z
+tags:
+  - armbial
+catalog: true
+categories:
+  - armbian
+sticky: false
+draft: false
+tocNumbering: true
+excludeFromSummary: false
+math: false
+quiz: false
+keywords: []
+---
+# Setup Home Server Lengkap dengan Armbian + Docker Compose
+
+## Pendahuluan
+
+Setelah menguasai dasar instalasi Armbian, langkah selanjutnya adalah membangun **home server all-in-one**. Dengan satu board ARM seharga Rp 300-500 ribu, Anda bisa menjalankan beberapa layanan sekaligus: **ad blocker**, **media server**, dan **file storage** — semua dikelola rapi dengan **Docker Compose**.
+
+Artikel ini akan membahas stack home server yang paling populer dan praktis untuk pemula.
+
+---
+
+## Stack yang Akan Dibangun
+
+{% table %}
+- Layanan
+- Fungsi
+- Port
+---
+- **Pi-hole**
+- DNS ad blocker & tracker
+- 53, 8080
+---
+- **Jellyfin**
+- Media streaming server
+- 8096
+---
+- **File Browser**
+- Web file manager
+- 8081
+---
+- **Portainer**
+- GUI manajemen Docker
+- 9000
+{% /table %}
+
+---
+
+## Persiapan
+
+### Prasyarat
+
+Sebelum mulai, pastikan:
+
+- Armbian sudah terinstall dan bisa SSH
+- Docker & Docker Compose sudah terinstall
+- Board memiliki **minimal 2GB RAM** (4GB lebih nyaman untuk multi-container)
+- Storage cukup (MicroSD 32GB+ atau USB HDD)
+
+### Struktur Folder
+
+Buat folder untuk menyimpan semua data container:
+
+```bash
+mkdir -p ~/home-server/{pihole,jellyfin,filebrowser,portainer}
+cd ~/home-serve
+```
+
+## **Docker Compose Stack**
+
+Buat file `docker-compose.yml` di folder `~/home-server`:
+
+**yaml**
+
+```yaml
+version: "3.8"
+
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "8080:80/tcp"
+    environment:
+      TZ: 'Asia/Jakarta'
+      WEBPASSWORD: 'passwordadmin'
+    volumes:
+      - ./pihole/etc-pihole:/etc/pihole
+      - ./pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+
+  jellyfin:
+    container_name: jellyfin
+    image: jellyfin/jellyfin:latest
+    ports:
+      - "8096:8096"
+    volumes:
+      - ./jellyfin/config:/config
+      - ./jellyfin/cache:/cache
+      - /mnt/media:/media:ro
+    restart: unless-stopped
+
+  filebrowser:
+    container_name: filebrowser
+    image: filebrowser/filebrowser:s6
+    ports:
+      - "8081:80"
+    volumes:
+      - /:/srv
+      - ./filebrowser/filebrowser.db:/database.db
+    restart: unless-stopped
+
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./portainer/data:/data
+    restart: unless-stopped
+```
+
+### **Penjelasan Volume**
+
+**Table**
+
+{% table %}
+- **Volume**
+- **Penjelasan**
+---
+- `./pihole/etc-pihole`
+- Konfigurasi dan database Pi-hole
+---
+- `./jellyfin/config`
+- Setting dan library metadata Jellyfin
+---
+- `/mnt/media:/media:ro`
+- Folder film/musik (read-only)
+---
+- `/:/srv`
+- Akses seluruh filesystem via File Browser
+---
+- `./portainer/data`
+- Data Portainer
+{% /table %}
+
+> **Catatan**: Ganti `/mnt/media` dengan path folder media Anda sendiri.
+
+---
+
+## **Menjalankan Stack**
+
+### **1. Jalankan Container**
+
+**bash**
+
+```bash
+cd ~/home-server
+docker compose up -d
+```
+
+Tunggu beberapa menit untuk download image pertama kali.
+
+### **2. Cek Status Container**
+
+**bash**
+
+```bash
+docker compose ps
+```
+
+Semua status harus menunjukkan `Up` atau `healthy`.
+
+### **3. Akses Layanan**
+
+**Table**
+
+{% table %}
+- **Layanan**
+- **URL**
+---
+- Pi-hole
+- `http://IP-BOARD:8080/admin`
+---
+- Jellyfin
+- `http://IP-BOARD:8096`
+---
+- File Browser
+- `http://IP-BOARD:8081`
+---
+- Portainer
+- `http://IP-BOARD:9000`
+{% /table %}
+
+---
+
+## **Konfigurasi Pi-hole**
+
+### **1. Login Dashboard**
+
+Buka `http://IP-BOARD:8080/admin` dan login dengan password yang di-set di `WEBPASSWORD`.
+
+### **2. Tambahkan Blocklist**
+
+Masuk ke **Group Management > Adlists**, tambahkan:
+
+**plain**
+
+```
+https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+https://mirror1.malwaredomains.com/files/justdomains
+```
+
+### **3. Arahkan DNS Router ke Pi-hole**
+
+Di router Anda, ubah DNS server menjadi IP board Armbian. Atau set manual per device:
+
+**Table**
+
+{% table %}
+- **Setting**
+- **Nilai**
+---
+- Primary DNS
+- IP Board Armbian
+---
+- Secondary DNS
+- `1.1.1.1`
+{% /table %}
+
+---
+
+## **Konfigurasi Jellyfin**
+
+### **1. Setup Awal**
+
+Buka `http://IP-BOARD:8096` dan ikuti wizard:
+
+1. **Bahasa** → Indonesia
+1. **User admin** → buat username & password
+1. **Tambah Media Library** → pilih folder `/media`
+1. **Metadata** → biarkan default
+
+### **2. Optimasi Transcoding (Board dengan GPU)**
+
+Jika board Anda memiliki GPU Mali (seperti Orange Pi 5), enable hardware transcoding:
+
+- Masuk **Dashboard > Playback**
+- **Hardware acceleration** → `Video4Linux2 (V4L2)`
+- Simpan dan restart Jellyfin
+
+---
+
+## **Konfigurasi File Browser**
+
+### **1. Login Pertama**
+
+Buka `http://IP-BOARD:8081`
+
+- **Username**: `admin`
+- **Password**: `admin`
+
+### **2. Ganti Password**
+
+Masuk ke **Settings > Profile**, ubah password default segera.
+
+### **3. Manajemen File**
+
+Anda bisa:
+
+- Upload/download file via browser
+- Buat folder baru
+- Edit file teks langsung di browser
+- Share file dengan link
+
+---
+
+## **Manajemen dengan Portainer**
+
+Portainer memberikan GUI untuk mengelola Docker tanpa perlu hafal command line.
+
+### **Fitur yang Berguna**
+
+**Table**
+
+{% table %}
+- **Fitur**
+- **Fungsi**
+---
+- **Containers**
+- Lihat status, log, restart container
+---
+- **Images**
+- Hapus image tidak terpakai
+---
+- **Volumes**
+- Kelola penyimpanan data
+---
+- **Stacks**
+- Edit docker-compose.yml via GUI
+{% /table %}
+
+---
+
+## **Update Stack**
+
+Untuk update image ke versi terbaru:
+
+**bash**
+
+```bash
+cd ~/home-server
+
+# Download image terbaru
+docker compose pull
+
+# Restart dengan image baru
+docker compose up -d
+
+# Hapus image lama
+docker image prune -f
+```
+
+---
+
+## **Backup dan Restore**
+
+### **Backup Data**
+
+**bash**
+
+```bash
+# Backup seluruh folder home-server
+tar -czvf home-server-backup.tar.gz ~/home-server
+
+# Copy ke PC atau cloud
+scp home-server-backup.tar.gz user@pc-lokal:/backup/
+```
+
+### **Restore**
+
+**bash**
+
+```bash
+# Extract ke lokasi semula
+tar -xzvf home-server-backup.tar.gz -C ~/
+
+# Jalankan ulang
+cd ~/home-server
+docker compose up -d
+```
+
+---
+
+## **Troubleshooting**
+
+### **Container Tidak Start**
+
+**bash**
+
+```bash
+# Cek log error
+docker logs pihole
+docker logs jellyfin
+
+# Cek port bentrok
+sudo ss -tlnp | grep :8080
+```
+
+### **Pi-hole Tidak Blokir Iklan**
+
+- Pastikan DNS router sudah diarahkan ke Pi-hole
+- Cek **Query Log** di dashboard Pi-hole
+- Flush DNS di device: `ipconfig /flushdns` (Windows)
+
+### **Jellyfin Tidak Baca Subtitle**
+
+- Pastikan subtitle file memiliki nama sama dengan video
+- Format yang didukung: `.srt`, `.ass`, `.ssa`
+
+---
+
+## **Tips Stabil 24/7**
+
+**Table**
+
+{% table %}
+- **Tips**
+- **Implementasi**
+---
+- **Auto restart**
+- Sudah di-set `restart: unless-stopped`
+---
+- **Log rotate**
+- `docker system prune -f` mingguan
+---
+- **Monitor suhu**
+- `watch -n 5 cat /sys/class/thermal/thermal_zone0/temp`
+---
+- **UPS**
+- Gunakan UPS agar tidak corrupt saat mati listrik
+---
+- **Static IP**
+- Set IP statis agar tidak berubah
+{% /table %}
+
+---
+
+## **Kesimpulan**
+
+Dengan satu board ARM + Armbian + Docker Compose, Anda sudah memiliki:
+
+- **Pi-hole** → internet bersih tanpa iklan
+- **Jellyfin** → Netflix pribadi dari koleksi film sendiri
+- **File Browser** → akses file dari mana saja
+- **Portainer** → kelola server tanpa ribet
+
+Semua berjalan dalam satu mesin dengan daya **5-10 watt**. Biaya listrik per bulan tidak sampai Rp 10 ribu.
+
+Selamat mencoba! 🚀

@@ -411,7 +411,7 @@ comment:
 analytics:
   umami:
     enabled: true
-    id: e8c8bafb-ae32-4c27-a66c-ab3d4061c4e2
+    id: 249808c9-3e9d-4e17-9762-95ebce65dd0b
     endpoint: https://umami-proxy.erlkim.workers.dev
 
     statistics_display:

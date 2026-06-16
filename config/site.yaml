@@ -14,7 +14,7 @@ site:
   title: 埃尔金 博主 # Nama situs
   alternate: erlk1m # Nama bahasa Inggris situs, digunakan di footer, Logo, @ handle, dll
   subtitle: Catatan sehari-hari # Subjudul situs
-  name: Erlk1m # Nama penulis - silakan ubah dengan nama Anda
+  name: k1m # Nama penulis - silakan ubah dengan nama Anda
   description: Blog pribadi berbasis Astro # Deskripsi situs
   avatar: /img/avatar.webp # Avatar situs
   showLogo: true # Tampilkan Logo

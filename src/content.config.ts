@@ -26,12 +26,14 @@ const blogCollection = defineCollection({
     updated: dateInSiteTimezone.optional(),
     cover: z.string().optional(),
     tags: z.array(z.string()).optional(),
+    customTags: z.array(z.string()).optional(),
     subtitle: z.string().optional(),
     catalog: z.boolean().optional().default(true),
     categories: z
       .array(z.string())
       .or(z.array(z.array(z.string())))
       .optional(),
+    customCategories: z.array(z.string()).optional(),
     sticky: z.boolean().optional(),
     draft: z.boolean().optional(),
     tocNumbering: z.boolean().optional().default(true),

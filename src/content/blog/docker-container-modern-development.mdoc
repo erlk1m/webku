@@ -1,0 +1,45 @@
+---
+title: 'Docker: Container untuk Modern Development'
+description: >-
+  Docker merevolusi cara developer membangun dan menjalankan aplikasi dengan
+  teknologi container yang ringan, portabel, dan konsisten di berbagai
+  lingkungan.
+date: 2026-06-16T09:30:00.000Z
+tags: []
+customTags: []
+catalog: true
+categories: []
+customCategories: []
+sticky: false
+draft: false
+tocNumbering: true
+excludeFromSummary: false
+math: false
+quiz: false
+keywords: []
+---
+Docker telah merevolusi cara developer membangun, mengirim, dan menjalankan aplikasi. Sejak pertama kali diperkenalkan oleh Solomon Hykes pada tahun 2013, teknologi container ini menjadi fondasi standar industri untuk pengembangan aplikasi modern.
+
+Apa Itu Docker?
+
+Docker adalah platform open-source yang memungkinkan developer untuk mengemas aplikasi beserta semua dependensinya ke dalam unit standar yang disebut container. Container berjalan secara konsisten di berbagai lingkungan — mulai dari laptop developer hingga server produksi — tanpa perubahan konfigurasi.
+
+Mengapa Container Lebih Baik dari VM?
+
+Sebelum Docker, Virtual Machine (VM) adalah solusi utama untuk isolasi aplikasi. Namun VM memiliki overhead yang besar karena setiap VM menjalankan sistem operasi lengkap. Docker container berbeda — container berbagi kernel OS host, sehingga jauh lebih ringan, cepat untuk start, dan efisien dalam penggunaan resource. Satu server bisa menjalankan ratusan container, sementara VM mungkin hanya beberapa puluh.
+
+Dockerfile dan Image
+
+Dockerfile adalah blueprint untuk membuat Docker image. Di dalamnya, developer mendefinisikan langkah-langkah untuk menginstal dependensi, mengkonfigurasi environment, dan menyiapkan aplikasi. Docker image yang dihasilkan bersifat immutable dan portable — bisa dijalankan di mana saja Docker runtime tersedia.
+
+Docker Compose untuk Multi-Container
+
+Aplikasi modern biasanya terdiri dari beberapa service: frontend, backend, database, cache. Docker Compose memungkinkan developer untuk mendefinisikan dan menjalankan seluruh stack aplikasi dengan satu file YAML. Command docker-compose up bisa menjalankan semua service sekaligus.
+
+Orchestration dengan Kubernetes
+
+Untuk aplikasi skala besar, Docker bekerja sama dengan Kubernetes untuk orkestrasi container. Kubernetes mengatur deployment, scaling, dan manajemen container secara otomatis. Kombinasi Docker + Kubernetes menjadi backbone infrastruktur cloud-native di perusahaan seperti Google, Spotify, dan Netflix.
+
+Kesimpulan
+
+Docker telah mengubah paradigma deployment dari it-works-on-my-machine menjadi it-works-everywhere. Bagi developer, memahami Docker bukan lagi opsional — itu adalah skill essential untuk survive di era cloud-native development.

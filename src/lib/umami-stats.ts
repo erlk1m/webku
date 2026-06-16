@@ -3,20 +3,11 @@ import type { UmamiSessionStats, UmamiStatsConfig } from '@/types/umami-stats';
 
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-// Share slug -> JWT token cache (JWT is short-lived, refresh every 30 min)
-const JWT_CACHE_TTL = 30 * 60 * 1000;
-let jwtCache: { token: string; expiresAt: number; key: string } | null = null;
-
-/** Exchange a share slug for a JWT token via GET /api/share/<slug> */
-async function resolveShareToken(baseUrl: string, shareSlug: string): Promise<string> {
-  const key = `${baseUrl}:${shareSlug}`;
-  if (jwtCache && jwtCache.key === key && jwtCache.expiresAt > Date.now()) {
-    return jwtCache.token;
-  }
+async function getSessionStats(config: UmamiStatsConfig): Promise<UmamiSessionStats> {
+  const { baseUrl, path } = config;
 
   const url = new URL(baseUrl);
-  const basePath = url.pathname.replace(/\/$/, '');
-  url.pathname = `${basePath}/api/share/${encodeURIComponent(shareSlug)}`;
+  if (path) url.searchParams.append('path', path);
 
   const response = await fetch(url.toString(), {
     method: 'GET',
@@ -24,39 +15,8 @@ async function resolveShareToken(baseUrl: string, shareSlug: string): Promise<st
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to resolve share token: ${response.status} ${response.statusText}`);
-  }
-
-  const data: { token: string; websiteId: string } = await response.json();
-  jwtCache = { token: data.token, expiresAt: Date.now() + JWT_CACHE_TTL, key };
-  return data.token;
-}
-
-async function getSessionStats(config: UmamiStatsConfig): Promise<UmamiSessionStats> {
-  const { baseUrl, websiteId, shareToken: shareSlug, path } = config;
-
-  const jwt = await resolveShareToken(baseUrl, shareSlug);
-
-  const url = new URL(baseUrl);
-  const basePath = url.pathname.replace(/\/$/, '');
-  url.pathname = `${basePath}/api/websites/${encodeURIComponent(websiteId)}/stats`;
-
-  const headers = new Headers({
-    accept: 'application/json',
-    'x-umami-share-token': jwt,
-  });
-
-  const params = new URLSearchParams();
-  // Default to Unix epoch (all-time stats)
-  params.append('startAt', config.startAt?.toString() || '0');
-  params.append('endAt', config.endAt?.toString() || Date.now().toString());
-  if (path) params.append('path', path);
-  url.search = params.toString();
-
-  const response = await fetch(url.toString(), { method: 'GET', headers });
-  if (!response.ok) {
     const text = await response.text().catch(() => response.statusText);
-    throw new Error(`Umami API error: ${text}`);
+    throw new Error(`Umami proxy error: ${text}`);
   }
   return await response.json();
 }
@@ -70,7 +30,7 @@ const cache = new Map<string, CacheEntry>();
 const inflightRequests = new Map<string, Promise<number | null>>();
 
 function getCacheKey(config: UmamiStatsConfig): string {
-  return `${config.baseUrl}:${config.websiteId}:${config.path ?? ''}`;
+  return `${config.baseUrl}:${config.path ?? ''}`;
 }
 
 export function getPageviews(config: UmamiStatsConfig): Promise<number | null> {
@@ -90,11 +50,6 @@ export function getPageviews(config: UmamiStatsConfig): Promise<number | null> {
     })
     .catch((error) => {
       console.error('Failed to fetch Umami pageviews:', error);
-      if (import.meta.env.DEV) {
-        console.warn(
-          `[umami-stats] Fetch failed for key "${key}". Check that your Umami endpoint, website ID, and share token are correct in config/site.yaml.`,
-        );
-      }
       cache.set(key, { value: null, expiresAt: Date.now() + CACHE_TTL });
       return null;
     })
@@ -110,12 +65,11 @@ function normalizePath(path: string): string {
 }
 
 export function createUmamiStatsConfig(config: UmamiConfig, path?: string): UmamiStatsConfig | null {
-  const token = config.statistics_display?.token;
-  if (!token) return null;
+  if (!config.enabled || !config.endpoint) return null;
   return {
     baseUrl: config.endpoint,
-    websiteId: config.id,
-    shareToken: token,
+    websiteId: config.id || '',
+    shareToken: '',
     path: path ? normalizePath(path) : undefined,
   };
 }

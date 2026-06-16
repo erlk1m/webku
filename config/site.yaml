@@ -412,9 +412,9 @@ analytics:
   umami:
     enabled: true
     id: e8c8bafb-ae32-4c27-a66c-ab3d4061c4e2
-    endpoint: https://umami-nu-liard.vercel.app
+    endpoint: https://umami-proxy.erlkim.workers.dev
     statistics_display:
-      token: "upEAre0aaQSxQmSt"
+      token: "proxy"
       footer_site_stats: true
       article_page_views: true
 

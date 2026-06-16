@@ -411,10 +411,10 @@ comment:
 analytics:
   umami:
     enabled: true
-    id: 249808c9-3e9d-4e17-9762-95ebce65dd0b
+    id: e8c8bafb-ae32-4c27-a66c-ab3d4061c4e2
     endpoint: https://umami-nu-liard.vercel.app
     statistics_display:
-      token: "rA1VZcizVBgaNPvR"
+      token: "upEAre0aaQSxQmSt"
       footer_site_stats: true
       article_page_views: true
 

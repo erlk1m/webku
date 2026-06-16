@@ -71,11 +71,12 @@ categoryMap: # Kategori utama
   周刊: weekly      # Mingguan
   # Kategori sekunder
   前端: front-end   # Frontend
-  # Tambahkan sesuai kebutuhan:
-  # Bacaan: reading
-  # Backend: back-end
-  # Algoritma: algorithm
-  # Proyek: project
+  # Kategori blog
+  AI: ai
+  armbian: armbian
+  tutorial: tutorial
+  rust: rust
+  pengetahuan: pengetahuan
 
 # =============================================================================
 # Kategori Pilihan (Beranda)

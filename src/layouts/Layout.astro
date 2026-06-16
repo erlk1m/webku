@@ -342,11 +342,23 @@ const keywords = keywordsOverride || siteConfig.keywords || [siteConfig.title];
 
     {/* Umami Analytics */}
     {analyticsConfig?.umami?.enabled && analyticsConfig.umami.id && (analyticsConfig.umami.tracking_endpoint || analyticsConfig.umami.endpoint) && (
-      <script
-        defer
-        src={(analyticsConfig.umami.tracking_endpoint || analyticsConfig.umami.endpoint) + '/script.js'}
-        data-website-id={analyticsConfig.umami.id}
-      />
+      <>
+        <script
+          defer
+          src={(analyticsConfig.umami.tracking_endpoint || analyticsConfig.umami.endpoint) + '/script.js'}
+          data-website-id={analyticsConfig.umami.id}
+        />
+        <script>
+          {`
+            // Re-track pageview on Astro View Transitions navigation
+            document.addEventListener('astro:after-swap', () => {
+              if (window.umami) {
+                window.umami.track();
+              }
+            });
+          `}
+        </script>
+      </>
     )}
   </head>
   <body>

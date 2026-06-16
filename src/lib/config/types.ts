@@ -442,6 +442,8 @@ export interface UmamiConfig {
   enabled: boolean;
   id: string;
   endpoint: string;
+  /** Optional separate endpoint for tracking script (defaults to endpoint) */
+  tracking_endpoint?: string;
   statistics_display?: {
     /** Umami share link token (read-only, safe to expose on client) */
     token: string;

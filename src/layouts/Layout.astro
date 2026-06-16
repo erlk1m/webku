@@ -341,10 +341,10 @@ const keywords = keywordsOverride || siteConfig.keywords || [siteConfig.title];
     </script>
 
     {/* Umami Analytics */}
-    {analyticsConfig?.umami?.enabled && analyticsConfig.umami.id && analyticsConfig.umami.endpoint && (
+    {analyticsConfig?.umami?.enabled && analyticsConfig.umami.id && (analyticsConfig.umami.tracking_endpoint || analyticsConfig.umami.endpoint) && (
       <script
         defer
-        src={analyticsConfig.umami.endpoint + '/script.js'}
+        src={(analyticsConfig.umami.tracking_endpoint || analyticsConfig.umami.endpoint) + '/script.js'}
         data-website-id={analyticsConfig.umami.id}
       />
     )}

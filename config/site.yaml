@@ -414,7 +414,7 @@ analytics:
     id: a32b4140-1260-4292-8e6e-9f03aca38812
     endpoint: https://umami-nu-liard.vercel.app
     statistics_display:
-      token: "Nh+uqvriahBaDRk/l/F65Hsatzib657VtnYytbPsyE0RJJmGxI8EYZ1gH4HPIQ399PjIS2PeJQVRXdc/DGlCytAIm48jv2SedLSAFDiMEdYr+IepfLxFVaxzaolCBnOzjyXKPpWH2stM5R6MfT2Hthzwe5AI6MZ5S/SB98cTjQMO2PJsO94fMoLJMammQ5tqFeqkPeQfbNWLsKXcrpTLVr9XgRonEaWuaIZa3YkevRzI1ekWmXf5of1Hi2LxnmRgCGNorMDhNEI2S+Vv6aF9d5OiCirX+pgEFWLQJ0BHPnPdDb8Jc90j1xqog6os/71bGPgGSlodFNft66S8/KYrGmDLeE+xUueI6BG+qcXsZxPbpDckDsi/tqqzZ+AL"
+      token: "oj3X2XJf5"
       footer_site_stats: true
       article_page_views: true
 

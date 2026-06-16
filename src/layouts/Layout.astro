@@ -25,7 +25,7 @@ import CodeBlockFullscreen from '@components/markdown/CodeBlockFullscreen';
 import DiagramFullscreen from '@components/markdown/DiagramFullscreen';
 import ImageLightbox from '@components/markdown/ImageLightbox';
 import { Toaster } from '@components/ui/sonner';
-import { bgmConfig, christmasConfig, seoConfig, siteConfig } from '@constants/site-config';
+import { analyticsConfig, bgmConfig, christmasConfig, seoConfig, siteConfig } from '@constants/site-config';
 import { getOgImageUrl } from '@lib/seo/og-image';
 import LoadingIndicator from 'astro-loading-indicator/component';
 import { SEO } from 'astro-seo';
@@ -339,6 +339,15 @@ const keywords = keywordsOverride || siteConfig.keywords || [siteConfig.title];
         });
       });
     </script>
+
+    {/* Umami Analytics */}
+    {analyticsConfig?.umami?.enabled && analyticsConfig.umami.id && analyticsConfig.umami.endpoint && (
+      <script
+        defer
+        src={analyticsConfig.umami.endpoint + '/script.js'}
+        data-website-id={analyticsConfig.umami.id}
+      />
+    )}
   </head>
   <body>
     <ChristmasEffects transition:persist="christmas-snowfall" />

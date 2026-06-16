@@ -1,9 +1,23 @@
 ---
 title: Tutorial Lengkap Armbian - Install dan Konfigurasi Linux untuk ARM Board
-date: 2026-06-16
-description: "Panduan lengkap install Armbian di board ARM seperti Orange Pi, Banana Pi, dan Raspberry Pi. Mulai dari flashing SD card hingga konfigurasi awal sistem."
+description: >-
+  Panduan lengkap install Armbian di board ARM seperti Orange Pi, Banana Pi, dan
+  Raspberry Pi. Mulai dari flashing SD card hingga konfigurasi awal sistem.
+date: 2026-06-16T00:00:00.000Z
+tags:
+  - armbian
+  - tutorial
+catalog: true
+categories:
+  - armbian
+sticky: false
+draft: false
+tocNumbering: true
+excludeFromSummary: false
+math: false
+quiz: false
+keywords: []
 ---
-
 # Tutorial Lengkap Armbian: Install dan Konfigurasi Linux untuk ARM Board
 
 ## Apa itu Armbian?
@@ -24,20 +38,34 @@ Keunggulan utama Armbian adalah:
 
 Sebelum memulai, pastikan Anda memiliki:
 
-| Item | Spesifikasi Minimal |
-|------|---------------------|
-| **Board ARM** | Orange Pi, Banana Pi, NanoPi, dll |
-| **MicroSD Card** | Minimal 8GB (disarankan 16GB atau lebih) |
-| **Card Reader** | USB Card Reader atau built-in |
-| **Power Supply** | 5V 2A atau sesuai rekomendasi board |
-| **Kabel Ethernet** | Untuk koneksi internet awal |
-| **Komputer** | Windows, Mac, atau Linux untuk flashing |
+{% table %}
+- Item
+- Spesifikasi Minimal
+---
+- **Board ARM**
+- Orange Pi, Banana Pi, NanoPi, dll
+---
+- **MicroSD Card**
+- Minimal 8GB (disarankan 16GB atau lebih)
+---
+- **Card Reader**
+- USB Card Reader atau built-in
+---
+- **Power Supply**
+- 5V 2A atau sesuai rekomendasi board
+---
+- **Kabel Ethernet**
+- Untuk koneksi internet awal
+---
+- **Komputer**
+- Windows, Mac, atau Linux untuk flashing
+{% /table %}
 
 ### Download Image Armbian
 
 1. Kunjungi situs resmi Armbian: [armbian.com](https://www.armbian.com)
-2. Pilih board Anda dari daftar yang tersedia
-3. Download image sesuai kebutuhan:
+1. Pilih board Anda dari daftar yang tersedia
+1. Download image sesuai kebutuhan:
    - **CLI (Jammy/Bookworm)** → untuk server/headless
    - **Desktop (Jammy/Bookworm)** → dengan antarmuka grafis
 
@@ -50,10 +78,10 @@ Sebelum memulai, pastikan Anda memiliki:
 BalenaEtcher adalah tool flashing yang paling mudah dan cross-platform.
 
 1. **Download dan install** BalenaEtcher dari [etcher.balena.io](https://etcher.balena.io)
-2. **Buka BalenaEtcher** dan klik **Flash from file**
-3. **Pilih image Armbian** yang sudah di-download (file `.img` atau `.img.xz`)
-4. **Pilih target** → pilih MicroSD card Anda
-5. **Klik Flash** dan tunggu proses selesai
+1. **Buka BalenaEtcher** dan klik **Flash from file**
+1. **Pilih image Armbian** yang sudah di-download (file `.img` atau `.img.xz`)
+1. **Pilih target** → pilih MicroSD card Anda
+1. **Klik Flash** dan tunggu proses selesai
 
 ### Menggunakan dd (Linux/macOS Terminal)
 
@@ -77,9 +105,9 @@ xz -dc armbian-image.img.xz | sudo dd of=/dev/sdX bs=4M status=progress conv=fsy
 ### 1. Siapkan Board
 
 1. **Masukkan MicroSD** ke slot board
-2. **Hubungkan kabel Ethernet** ke router/switch
-3. **Hubungkan power supply** dan nyalakan board
-4. **Tunggu 2-3 menit** untuk boot pertama kali
+1. **Hubungkan kabel Ethernet** ke router/switch
+1. **Hubungkan power supply** dan nyalakan board
+1. **Tunggu 2-3 menit** untuk boot pertama kali
 
 ### 2. Cek IP Address Board
 
@@ -97,9 +125,13 @@ sudo arp-scan -l
 
 Armbian default menggunakan kredensial berikut:
 
-| Username | Password |
-|----------|----------|
-| `root` | `1234` |
+{% table %}
+- Username
+- Password
+---
+- `root`
+- `1234`
+{% /table %}
 
 ```bash
 # Login via SSH (ganti IP dengan IP board Anda)
@@ -111,10 +143,10 @@ ssh root@192.168.1.100
 Saat login pertama, Armbian akan menjalankan wizard konfigurasi:
 
 1. **Ubah password root** → masukkan password baru yang kuat
-2. **Buat user baru** → masukkan username, password, dan informasi user
-3. **Pilih timezone** → pilih sesuai lokasi Anda (Asia/Jakarta untuk Indonesia)
-4. **Pilih locale** → pilih `en_US.UTF-8` atau `id_ID.UTF-8`
-5. **Pilih shell default** → `bash` direkomendasikan
+1. **Buat user baru** → masukkan username, password, dan informasi user
+1. **Pilih timezone** → pilih sesuai lokasi Anda (Asia/Jakarta untuk Indonesia)
+1. **Pilih locale** → pilih `en_US.UTF-8` atau `id_ID.UTF-8`
+1. **Pilih shell default** → `bash` direkomendasikan
 
 ## Langkah 3: Update dan Upgrade Sistem
 
@@ -170,6 +202,7 @@ sudo armbian-config
 ```
 
 Dengan `armbian-config`, Anda bisa:
+
 - **Network** → konfigurasi WiFi, static IP, hotspot
 - **Personal** → timezone, hostname, password
 - **Software** → install package populer (Docker, Samba, Plex, dll)
@@ -246,12 +279,22 @@ sudo nano /etc/fstab
 
 ### Board Tidak Boot
 
-| Masalah | Solusi |
-|---------|--------|
-| LED tidak menyala | Cek power supply, pastikan cukup ampere |
-| Boot loop | Flash ulang image, cek SD card (gunakan yang baru) |
-| Tidak ada output HDMI | Cek kabel dan monitor, beberapa board butuh waktu boot |
-| Tidak terdeteksi di network | Cek kabel Ethernet, cek DHCP router |
+{% table %}
+- Masalah
+- Solusi
+---
+- LED tidak menyala
+- Cek power supply, pastikan cukup ampere
+---
+- Boot loop
+- Flash ulang image, cek SD card (gunakan yang baru)
+---
+- Tidak ada output HDMI
+- Cek kabel dan monitor, beberapa board butuh waktu boot
+---
+- Tidak terdeteksi di network
+- Cek kabel Ethernet, cek DHCP router
+{% /table %}
 
 ### Login Gagal
 

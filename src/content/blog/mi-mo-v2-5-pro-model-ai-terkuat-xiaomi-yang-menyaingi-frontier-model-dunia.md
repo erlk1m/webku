@@ -8,7 +8,7 @@ date: 2026-06-16T06:24:00.000Z
 tags:
   - xiaomi
   - mimo
-  - ' ai'
+  - ai
   - llm
 catalog: true
 categories:

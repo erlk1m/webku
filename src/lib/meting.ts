@@ -6,7 +6,7 @@
  */
 
 const DEFAULT_API = 'https://163.hyc.moe/';
-const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 export interface MetingSong {
   name: string;

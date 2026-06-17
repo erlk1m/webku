@@ -4,6 +4,7 @@ export default {
     const origin = request.headers.get('Origin') || '*';
 
     const corsHeaders = {
+      'X-Content-Type-Options': 'nosniff',
       'Access-Control-Allow-Origin': origin,
       'Access-Control-Allow-Methods': 'GET, OPTIONS',
       'Access-Control-Allow-Headers': '*',

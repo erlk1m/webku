@@ -340,16 +340,17 @@ const keywords = keywordsOverride || siteConfig.keywords || [siteConfig.title];
       });
     </script>
 
-    {/* Umami Analytics */}
+    {/* Analytics & Page View Counter */}
     {analyticsConfig?.umami?.enabled && analyticsConfig.umami.id && (analyticsConfig.umami.tracking_endpoint || analyticsConfig.umami.endpoint) && (
       <script
         is:inline
         define:vars={{
           endpoint: (analyticsConfig.umami.tracking_endpoint || analyticsConfig.umami.endpoint),
+          counterEndpoint: analyticsConfig.umami.endpoint,
           websiteId: analyticsConfig.umami.id
         }}
       >
-        // Load Umami tracking script
+        // Load Umami tracking script (for dashboard analytics)
         (function() {
           var s = document.createElement('script');
           s.defer = true;
@@ -358,9 +359,23 @@ const keywords = keywordsOverride || siteConfig.keywords || [siteConfig.title];
           document.head.appendChild(s);
         })();
 
-        // Track pageview on Astro View Transitions navigation
+        // Increment page view counter in KV
+        function trackPageView() {
+          var path = window.location.pathname;
+          fetch(counterEndpoint + '/views', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ path: path }),
+          }).catch(function() {});
+        }
+
+        // Track on initial load
+        trackPageView();
+
+        // Track on Astro View Transitions navigation
         document.addEventListener('astro:after-swap', function() {
           setTimeout(function() {
+            trackPageView();
             if (window.umami) {
               window.umami.track();
             }

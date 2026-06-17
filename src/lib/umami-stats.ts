@@ -1,12 +1,12 @@
 import type { UmamiConfig } from '@lib/config/types';
 import type { UmamiSessionStats, UmamiStatsConfig } from '@/types/umami-stats';
 
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 60 * 1000; // 1 minute
 
 async function getSessionStats(config: UmamiStatsConfig): Promise<UmamiSessionStats> {
   const { baseUrl, path } = config;
 
-  const url = new URL(baseUrl);
+  const url = new URL(baseUrl + '/views');
   if (path) url.searchParams.append('path', path);
 
   const response = await fetch(url.toString(), {
@@ -16,7 +16,7 @@ async function getSessionStats(config: UmamiStatsConfig): Promise<UmamiSessionSt
 
   if (!response.ok) {
     const text = await response.text().catch(() => response.statusText);
-    throw new Error(`Umami proxy error: ${text}`);
+    throw new Error(`Pageview counter error: ${text}`);
   }
   return await response.json();
 }
@@ -44,12 +44,12 @@ export function getPageviews(config: UmamiStatsConfig): Promise<number | null> {
 
   const promise = getSessionStats(config)
     .then((stats) => {
-      const pv = typeof stats.pageviews === 'number' ? stats.pageviews : stats.pageviews.value;
+      const pv = typeof stats.pageviews === 'number' ? stats.pageviews : ((stats.pageviews as any)?.value ?? 0);
       cache.set(key, { value: pv, expiresAt: Date.now() + CACHE_TTL });
       return pv;
     })
     .catch((error) => {
-      console.error('Failed to fetch Umami pageviews:', error);
+      console.error('Failed to fetch pageviews:', error);
       cache.set(key, { value: null, expiresAt: Date.now() + CACHE_TTL });
       return null;
     })
@@ -59,7 +59,6 @@ export function getPageviews(config: UmamiStatsConfig): Promise<number | null> {
   return promise;
 }
 
-/** Normalize path to strip trailing slash for consistent Umami matching */
 function normalizePath(path: string): string {
   return path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path;
 }

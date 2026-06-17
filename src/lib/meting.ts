@@ -2,7 +2,7 @@
  * Meting API client — resolves music platform URLs to playable audio streams.
  *
  * Ported from Shoka player.js URL parsing + Meting API integration.
- * Supports NetEase Cloud Music, QQ Music, and direct audio URLs.
+ * Supports NetEase Cloud Music, QQ Music, direct audio URLs, and R2 playlist URLs.
  */
 
 const DEFAULT_API = 'https://163.hyc.moe/';
@@ -50,10 +50,18 @@ function isDirectAudioUrl(url: string): boolean {
   return /\.(mp3|ogg|wav|flac|m4a|aac)(\?|$)/i.test(url);
 }
 
+/** Check if a URL is an R2 playlist worker URL */
+function isR2PlaylistUrl(url: string): boolean {
+  return /r2-playlist.*\.workers\.dev\/playlist/i.test(url);
+}
+
 /** Create a MetingSong from a direct audio URL. */
 function toDirectSong(url: string): MetingSong {
   const filename = url.split('/').pop()?.split('?')[0] ?? 'Unknown';
-  const name = filename.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
+  const name = filename
+    .replace(/\.[^.]+$/, '')
+    .replace(/[-_]/g, ' ')
+    .replace(/%20/g, ' ');
   return { name, artist: 'Unknown', url, pic: '', lrc: '' };
 }
 
@@ -96,6 +104,22 @@ function isMetingSong(obj: unknown): obj is MetingSong {
   return typeof o.name === 'string' && typeof o.artist === 'string' && typeof o.url === 'string';
 }
 
+/** Fetch songs from R2 playlist worker. */
+async function fetchR2Playlist(url: string): Promise<MetingSong[]> {
+  const cacheKey = `r2playlist:${url}`;
+  const cached = getFromCache(cacheKey);
+  if (cached) return cached;
+
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`R2 playlist error: ${response.status}`);
+
+  const data: unknown = await response.json();
+  if (!Array.isArray(data)) return [];
+  const songs = data.filter(isMetingSong) as MetingSong[];
+  if (songs.length > 0) setCache(cacheKey, songs);
+  return songs;
+}
+
 /** Fetch songs from Meting API for a single parsed URL. */
 export async function fetchMeting(server: string, type: string, id: string, apiUrl?: string): Promise<MetingSong[]> {
   const cacheKey = getCacheKey(server, type, id);
@@ -119,6 +143,9 @@ export async function fetchMeting(server: string, type: string, id: string, apiU
 export async function resolvePlaylist(urls: string[], apiUrl?: string): Promise<MetingSong[]> {
   const results = await Promise.allSettled(
     urls.map((url) => {
+      if (isR2PlaylistUrl(url)) {
+        return fetchR2Playlist(url);
+      }
       if (isDirectAudioUrl(url)) {
         return Promise.resolve([toDirectSong(url)]);
       }

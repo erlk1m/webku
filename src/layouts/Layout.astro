@@ -366,7 +366,12 @@ const keywords = keywordsOverride || siteConfig.keywords || [siteConfig.title];
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ path: path }),
-          }).catch(function() {});
+          })
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            window.dispatchEvent(new CustomEvent('pageview', { detail: { count: data.pageviews, path: path } }));
+          })
+          .catch(function() {});
         }
 
         // Track on initial load

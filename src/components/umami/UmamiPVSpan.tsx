@@ -14,6 +14,8 @@ export default function UmamiPVSpan({ statsConfig, compact = true }: Props) {
 
   useEffect(() => {
     let cancelled = false;
+
+    // Fetch initial count
     getPageviews({ baseUrl, websiteId, shareToken, path })
       .then((pv) => {
         if (!cancelled) setPageviews(pv);
@@ -21,8 +23,22 @@ export default function UmamiPVSpan({ statsConfig, compact = true }: Props) {
       .catch(() => {
         if (!cancelled) setPageviews(null);
       });
+
+    // Listen for real-time updates from KV increment
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (!cancelled && detail && typeof detail.count === 'number') {
+        // Only update if this event is for the same path (or no path filter)
+        if (!path || detail.path === path) {
+          setPageviews(detail.count);
+        }
+      }
+    };
+    window.addEventListener('pageview', handler);
+
     return () => {
       cancelled = true;
+      window.removeEventListener('pageview', handler);
     };
   }, [baseUrl, websiteId, shareToken, path]);
 

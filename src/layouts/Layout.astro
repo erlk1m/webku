@@ -342,23 +342,31 @@ const keywords = keywordsOverride || siteConfig.keywords || [siteConfig.title];
 
     {/* Umami Analytics */}
     {analyticsConfig?.umami?.enabled && analyticsConfig.umami.id && (analyticsConfig.umami.tracking_endpoint || analyticsConfig.umami.endpoint) && (
-      <>
-        <script
-          defer
-          src={(analyticsConfig.umami.tracking_endpoint || analyticsConfig.umami.endpoint) + '/script.js'}
-          data-website-id={analyticsConfig.umami.id}
-        />
-        <script>
-          {`
-            // Re-track pageview on Astro View Transitions navigation
-            document.addEventListener('astro:after-swap', () => {
-              if (window.umami) {
-                window.umami.track();
-              }
-            });
-          `}
-        </script>
-      </>
+      <script
+        is:inline
+        define:vars={{
+          endpoint: (analyticsConfig.umami.tracking_endpoint || analyticsConfig.umami.endpoint),
+          websiteId: analyticsConfig.umami.id
+        }}
+      >
+        // Load Umami tracking script
+        (function() {
+          var s = document.createElement('script');
+          s.defer = true;
+          s.src = endpoint + '/script.js';
+          s.setAttribute('data-website-id', websiteId);
+          document.head.appendChild(s);
+        })();
+
+        // Track pageview on Astro View Transitions navigation
+        document.addEventListener('astro:after-swap', function() {
+          setTimeout(function() {
+            if (window.umami) {
+              window.umami.track();
+            }
+          }, 500);
+        });
+      </script>
     )}
   </head>
   <body>

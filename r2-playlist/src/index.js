@@ -13,8 +13,28 @@ export default {
       return new Response(null, { headers: corsHeaders });
     }
 
-    // GET /playlist?prefix=dj/
-    // Returns JSON array of { name, url, size }
+    // Serve audio file from R2 directly
+    // GET /file?key=dj/song.mp3
+    if (url.pathname === '/file') {
+      const key = url.searchParams.get('key');
+      if (!key) {
+        return new Response('Missing key param', { status: 400 });
+      }
+
+      const obj = await env.MEDIA.get(key);
+      if (!obj) {
+        return new Response('File not found', { status: 404 });
+      }
+
+      const headers = new Headers(corsHeaders);
+      headers.set('Content-Type', 'audio/mpeg');
+      headers.set('Cache-Control', 'public, max-age=86400');
+      headers.set('Accept-Ranges', 'bytes');
+
+      return new Response(obj.body, { headers });
+    }
+
+    // GET /playlist - list all audio files
     const prefix = url.searchParams.get('prefix') || '';
 
     try {
@@ -22,24 +42,23 @@ export default {
       const files = [];
 
       for (const obj of listed.objects) {
-        // Only include audio files
         if (/\.(mp3|ogg|wav|flac|m4a|aac)$/i.test(obj.key)) {
           const name = obj.key
             .split('/')
             .pop()
             .replace(/\.[^.]+$/, '')
-            .replace(/[-_]/g, ' ')
             .replace(/%20/g, ' ')
+            .replace(/[-_]/g, ' ')
             .replace(/\s+/g, ' ')
             .trim();
 
-          // Build public URL - Ganti dengan domain R2 publik kamu
-          const publicUrl = `https://pub-a9aa841c2e964eeb92906c54952521c7.r2.dev/${encodeURIComponent(obj.key).replace(/%2F/g, '/')}`;
+          // URL ke worker sendiri untuk serve file
+          const workerUrl = `https://media.erlkim.web.id/${encodeURIComponent(obj.key).replace(/%2F/g, '/')}`;
 
           files.push({
             name,
             artist: 'Unknown',
-            url: publicUrl,
+            url: workerUrl,
             pic: '',
             lrc: '',
             size: obj.size,

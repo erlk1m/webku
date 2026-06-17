@@ -1,0 +1,8 @@
+name = "r2-playlist"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+# Ganti dengan nama R2 bucket kamu
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "erlkim-media"

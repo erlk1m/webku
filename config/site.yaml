@@ -14,7 +14,7 @@ site:
   title: 个人博客 # Nama situs
   alternate: erlk1m # Nama bahasa Inggris situs, digunakan di footer, Logo, @ handle, dll
   subtitle: Catatan Linux, Armbian, Docker, Rust & AI # Subjudul situs
-  name: Erlk1m # Nama penulis - silakan ubah dengan nama Anda
+  name: k1m # Nama penulis - silakan ubah dengan nama Anda
   description: Blog seputar Armbian, Docker, Linux, Pemrograman Rust, dan Kecerdasan Buatan # Deskripsi situs
   avatar: /img/avatar.webp # Avatar situs
   showLogo: true # Tampilkan Logo

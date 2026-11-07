@@ -269,14 +269,74 @@ async fn handle_netease(
                     MetingSong {
                         name: t.name,
                         artist: if artist.is_empty() { "Unknown".to_string() } else { artist },
-                        url: format!("https://music.163.com/song/media/outer/url?id={}.mp3", t.id),
-                        pic,
+                        url: format!("{}/?server=netease&type=url&id={}", base_url, t.id),
+                        pic: format!("{}/?server=netease&type=pic&id={}", base_url, t.id),
                         lrc: format!("{}/?server=netease&type=lrc&id={}", base_url, t.id),
                     }
                 })
                 .collect();
 
             json_response(&songs)
+        }
+
+        "song" => {
+            let api_url = format!("https://music.163.com/api/song/detail?ids=[{}]", id);
+            let body = fetch_netease(&api_url).await?;
+            let parsed: NeteaseSongDetailResponse = serde_json::from_str(&body)
+                .map_err(|e| Error::from(format!("Failed to parse song: {}", e)))?;
+
+            let songs: Vec<MetingSong> = parsed
+                .songs
+                .into_iter()
+                .map(|t| {
+                    let artist = t.artists.into_iter().map(|a| a.name).collect::<Vec<_>>().join(" / ");
+                    MetingSong {
+                        name: t.name,
+                        artist: if artist.is_empty() { "Unknown".to_string() } else { artist },
+                        url: format!("{}/?server=netease&type=url&id={}", base_url, t.id),
+                        pic: format!("{}/?server=netease&type=pic&id={}", base_url, t.id),
+                        lrc: format!("{}/?server=netease&type=lrc&id={}", base_url, t.id),
+                    }
+                })
+                .collect();
+
+            json_response(&songs)
+        }
+
+        "name" => {
+            let api_url = format!("https://music.163.com/api/song/detail?ids=[{}]", id);
+            let body = fetch_netease(&api_url).await?;
+            let parsed: NeteaseSongDetailResponse = serde_json::from_str(&body).unwrap_or(NeteaseSongDetailResponse { code: 200, songs: vec![] });
+            if let Some(song) = parsed.songs.first() {
+                text_response(&song.name, "text/plain; charset=utf-8")
+            } else {
+                Response::error("Song not found", 404)
+            }
+        }
+
+        "artist" => {
+            let api_url = format!("https://music.163.com/api/song/detail?ids=[{}]", id);
+            let body = fetch_netease(&api_url).await?;
+            let parsed: NeteaseSongDetailResponse = serde_json::from_str(&body).unwrap_or(NeteaseSongDetailResponse { code: 200, songs: vec![] });
+            if let Some(song) = parsed.songs.first() {
+                let artist = song.artists.iter().map(|a| a.name.as_str()).filter(|n| !n.is_empty()).collect::<Vec<_>>().join(" / ");
+                text_response(&artist, "text/plain; charset=utf-8")
+            } else {
+                Response::error("Artist not found", 404)
+            }
+        }
+
+        "pic" => {
+            let api_url = format!("https://music.163.com/api/song/detail?ids=[{}]", id);
+            let body = fetch_netease(&api_url).await?;
+            let parsed: NeteaseSongDetailResponse = serde_json::from_str(&body).unwrap_or(NeteaseSongDetailResponse { code: 200, songs: vec![] });
+            if let Some(song) = parsed.songs.first() {
+                if let Some(pic) = song.album.as_ref().and_then(|a| a.pic_url.as_ref()) {
+                    let secure_pic = pic.replace("http://", "https://");
+                    return redirect_response(&format!("{}?param=300y300", secure_pic));
+                }
+            }
+            redirect_response(&format!("https://p2.music.126.net/6y-UleORITEDbvrOLV0Q8A==/{}.jpg?param=300y300", id))
         }
 
         "lrc" | "lyric" => {
@@ -329,12 +389,16 @@ pub async fn main(req: Request, _env: Env, _ctx: Context) -> Result<Response> {
     let req_type = match params.get("type") {
         Some(t) => t.as_str(),
         None => {
-            return json_response(&serde_json::json!({
-                "service": "Meting API (Rust WebAssembly)",
-                "author": "Erlk1m",
-                "version": "1.0.0",
-                "runtime": "Cloudflare Workers / wasm32"
-            }));
+            // Tampilkan antarmuka HTML dokumentasi jika dibuka langsung di browser
+            if params.get("format").map(|f| f.as_str()) == Some("json") {
+                return json_response(&serde_json::json!({
+                    "service": "Meting API (Rust WebAssembly)",
+                    "author": "Erlk1m",
+                    "version": "1.1.0",
+                    "runtime": "Cloudflare Workers / wasm32"
+                }));
+            }
+            return html_response(&render_docs_html(&base_url));
         }
     };
 

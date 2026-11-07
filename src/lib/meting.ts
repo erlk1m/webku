@@ -77,7 +77,7 @@ interface CacheEntry {
 }
 
 function getCacheKey(server: string, type: string, id: string): string {
-  return `meting:v4:${server}:${type}:${id}`;
+  return `meting:v5:${server}:${type}:${id}`;
 }
 
 function getFromCache(key: string): MetingSong[] | null {

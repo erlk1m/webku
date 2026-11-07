@@ -440,6 +440,7 @@ seo:
 # =============================================================================
 bgm:
   enabled: true
+  metingApi: https://meting-api-worker.erlkim.workers.dev/
   audio:
     - title: NoCopyrightSounds (NCS)
       list:

@@ -6,7 +6,7 @@
  * direct audio URLs, and R2 playlist URLs.
  */
 
-const DEFAULT_API = 'https://163.hyc.moe/';
+const DEFAULT_API = 'https://meting-api-worker.erlkim.workers.dev/';
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 export interface MetingSong {
@@ -77,7 +77,7 @@ interface CacheEntry {
 }
 
 function getCacheKey(server: string, type: string, id: string): string {
-  return `meting:v3:${server}:${type}:${id}`;
+  return `meting:v4:${server}:${type}:${id}`;
 }
 
 function getFromCache(key: string): MetingSong[] | null {

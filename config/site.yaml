@@ -11,24 +11,27 @@
 # Informasi Dasar Situs
 # =============================================================================
 site:
-  title: 埃尔金 博主 # Nama situs
+  title: Erlk1m Blog # Nama situs
   alternate: erlk1m # Nama bahasa Inggris situs, digunakan di footer, Logo, @ handle, dll
-  subtitle: Catatan sehari-hari # Subjudul situs
-  name: k1m # Nama penulis - silakan ubah dengan nama Anda
-  description: Blog pribadi berbasis Astro # Deskripsi situs
+  subtitle: Catatan Linux, Armbian, Docker, Rust & AI # Subjudul situs
+  name: Erlk1m # Nama penulis - silakan ubah dengan nama Anda
+  description: Blog seputar Armbian, Docker, Linux, Pemrograman Rust, dan Kecerdasan Buatan # Deskripsi situs
   avatar: /img/avatar.webp # Avatar situs
   showLogo: true # Tampilkan Logo
   author: Erlk1m # Nama penulis - silakan ubah dengan nama Anda
-  url: https://armbian.web.id # URL situs untuk RSS dan SEO
+  url: https://webku-7lt.pages.dev # URL situs untuk RSS dan SEO
   defaultOgImage: /img/avatar.webp # Gambar Open Graph default
   startYear: 2024 # Tahun pembuatan situs
   timezone: Asia/Jakarta # Konfigurasi zona waktu (format IANA), untuk tampilan dan pemrosesan tanggal
   keywords: # Kata kunci SEO (global)
     - blog
     - Astro
-    - teknologi
-    - web
-    # Silakan tambahkan kata kunci sesuai konten website Anda
+    - Armbian
+    - Linux
+    - Docker
+    - Rust
+    - AI
+    - WebAssembly
   # breadcrumbHome: Beranda  # Nama tampilan beranda di navigasi breadcrumb (default: 'Beranda')
   # icp:                         # Nomor ICP (dapat dikustomisasi link-nya)
   #   text: "xxxxxxxxxx"
@@ -74,6 +77,7 @@ categoryMap: # Kategori utama
   # Kategori blog
   AI: ai
   armbian: armbian
+  docker: docker
   tutorial: tutorial
   rust: rust
   pengetahuan: pengetahuan
@@ -89,22 +93,22 @@ categoryMap: # Kategori utama
 #   description: teks deskripsi kategori, ditampilkan di kartu
 # -----------------------------------------------------------------------------
 featuredCategories:
-  - link: life
-    label: 随笔
+  - link: armbian
+    label: Armbian & SBC
     image: /img/cover/2.webp
-    description: Catatan kehidupan, curhat sehari-hari
-  - link: note
-    label: 笔记
+    description: Panduan Linux ARM, TV Box, dan setup Home Server
+  - link: docker
+    label: Docker & Server
     image: /img/cover/4.webp
-    description: Catatan teknologi, catatan belajar
-  - link: note/front-end
-    label: 前端
+    description: Containerization, Docker Compose, dan DevOps modern
+  - link: rust
+    label: Rust Programming
     image: /img/cover/1.webp
-    description: Terkait teknologi frontend
-  - link: tools
-    label: 工具
+    description: Belajar bahasa pemrograman Rust dari dasar hingga WebAssembly
+  - link: ai
+    label: Artificial Intelligence
     image: /img/cover/11.webp
-    description: Penggunaan alat, peningkatan produktivitas
+    description: Eksplorasi LLM, ChatGPT, Xiaomi MiMo, dan model AI modern
 
 # =============================================================================
 # Seri Pilihan
@@ -340,10 +344,10 @@ navigation:
     icon: ri:home-heart-fill # Ikon
   # - name: Bacaan
   #   path: /reading
-  - name: Mingguan
-    nameKey: nav.weekly
-    path: /weekly
-    icon: ri:newspaper-line
+  # - name: Mingguan
+  #   nameKey: nav.weekly
+  #   path: /weekly
+  #   icon: ri:newspaper-line
   - name: Artikel # Saat ada submenu, path bisa diabaikan
     nameKey: nav.posts
     icon: ri:quill-pen-ai-fill

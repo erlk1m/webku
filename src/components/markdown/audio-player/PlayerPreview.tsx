@@ -4,6 +4,7 @@
 
 import { usePlaybackLrcIndex } from '@hooks/usePlaybackTime';
 import type { MetingSong } from '@lib/meting';
+import { resolveMusicCover } from '@lib/music-cover';
 import type { PlaybackTimeStore } from '@lib/playback-time-store';
 import { cn } from '@lib/utils';
 import { memo, useEffect, useMemo, useState } from 'react';
@@ -17,6 +18,8 @@ interface PlayerPreviewProps {
   lrcLineHeight?: number;
   /** Container height in px — must match CSS `.audio-player-lrc` height. @default 128 */
   lrcContainerHeight?: number;
+  /** Keep the lyrics slot while fetching, so floating players don't shift their controls. */
+  reserveLyrics?: boolean;
 }
 
 /** Default line height and container height (match CSS values) */
@@ -34,18 +37,14 @@ function useLrcText(lrcSource: string | undefined): string {
     }
 
     if (lrcSource.startsWith('http')) {
-      let cancelled = false;
-      fetch(lrcSource)
+      const controller = new AbortController();
+      fetch(lrcSource, { signal: controller.signal })
         .then((r) => r.text())
-        .then((t) => {
-          if (!cancelled) setText(t);
-        })
-        .catch(() => {
-          if (!cancelled) setText('');
+        .then(setText)
+        .catch((error: unknown) => {
+          if (!(error instanceof DOMException && error.name === 'AbortError')) setText('');
         });
-      return () => {
-        cancelled = true;
-      };
+      return () => controller.abort();
     }
 
     setText(lrcSource);
@@ -60,7 +59,18 @@ export const PlayerPreview = memo(function PlayerPreview({
   timeStore,
   lrcLineHeight = DEFAULT_LRC_LINE_HEIGHT,
   lrcContainerHeight = DEFAULT_LRC_CONTAINER_HEIGHT,
+  reserveLyrics = false,
 }: PlayerPreviewProps) {
+  const source = track?.pic ?? '';
+  const [cover, setCover] = useState({ source: '', url: '' });
+  useEffect(() => {
+    if (!source) return;
+    const controller = new AbortController();
+    void resolveMusicCover(source, controller.signal).then((url) => {
+      if (!controller.signal.aborted) setCover({ source, url });
+    });
+    return () => controller.abort();
+  }, [source]);
   const lrcText = useLrcText(track?.lrc);
   const lrcLines = useMemo(() => parseLrc(lrcText), [lrcText]);
   const currentLrcIndex = usePlaybackLrcIndex(timeStore, lrcLines);
@@ -72,8 +82,17 @@ export const PlayerPreview = memo(function PlayerPreview({
       {/* Disc wrapper: vinyl disc + tonearm */}
       <div className="audio-player-disc-wrapper">
         <div className={cn('audio-player-disc', playing && 'spinning')}>
-          {track?.pic ? (
-            <img src={track.pic} alt={track.name || ''} className="audio-player-cover" draggable={false} />
+          {cover.source === source && cover.url ? (
+            <img
+              src={cover.url}
+              alt={track?.name || ''}
+              width={200}
+              height={200}
+              className="audio-player-cover"
+              loading="lazy"
+              decoding="async"
+              draggable={false}
+            />
           ) : (
             <div className="audio-player-cover audio-player-cover-placeholder" />
           )}
@@ -95,7 +114,7 @@ export const PlayerPreview = memo(function PlayerPreview({
         </div>
 
         {/* Lyrics area — current line centered vertically */}
-        {lrcLines.length > 0 && (
+        {(reserveLyrics || lrcLines.length > 0) && (
           <div className="audio-player-lrc">
             <div
               className="audio-player-lrc-inner"

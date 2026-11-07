@@ -11,7 +11,7 @@
 # Informasi Dasar Situs
 # =============================================================================
 site:
-  title: Erlk1m Blog # Nama situs
+  title: 个人博客 # Nama situs
   alternate: erlk1m # Nama bahasa Inggris situs, digunakan di footer, Logo, @ handle, dll
   subtitle: Catatan Linux, Armbian, Docker, Rust & AI # Subjudul situs
   name: Erlk1m # Nama penulis - silakan ubah dengan nama Anda
@@ -19,7 +19,7 @@ site:
   avatar: /img/avatar.webp # Avatar situs
   showLogo: true # Tampilkan Logo
   author: Erlk1m # Nama penulis - silakan ubah dengan nama Anda
-  url: https://webku-7lt.pages.dev # URL situs untuk RSS dan SEO
+  url: https://blog.erlkim.web.id # URL situs untuk RSS dan SEO
   defaultOgImage: /img/avatar.webp # Gambar Open Graph default
   startYear: 2024 # Tahun pembuatan situs
   timezone: Asia/Jakarta # Konfigurasi zona waktu (format IANA), untuk tampilan dan pemrosesan tanggal

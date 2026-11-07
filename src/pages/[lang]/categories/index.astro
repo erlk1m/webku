@@ -1,6 +1,10 @@
 ---
 import { getLocaleStaticPaths } from '../../_shared/utils';
 import CategoriesPage from '../../categories/index.astro';
+
 export const getStaticPaths = getLocaleStaticPaths;
+
+const { lang } = Astro.params;
+const locale = lang;
 ---
-<CategoriesPage />
+<CategoriesPage locale={locale} />

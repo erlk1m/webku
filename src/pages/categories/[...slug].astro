@@ -3,41 +3,50 @@ import CategoryPostList from '@components/category/CategoryPostList.astro';
 import HomeSider from '@components/layout/HomeSider.astro';
 import Cover from '@components/ui/cover/Cover.astro';
 import { seoConfig } from '@constants/site-config';
-import Layout from '@layouts/Layout.astro';
-import TwoColumnLayout from '@layouts/TwoColumnLayout.astro';
-import { getCategoryByLink, getCategoryLinks, getCategoryList, translateCategoryName } from '@lib/content';
+import { Layout, TwoColumnLayout } from '@layouts/index';
+import {
+  type Category,
+  getCategoryLinks,
+  getCategoryList,
+  getCategoryNameByLink,
+  getSortedPosts,
+  translateCategoryName,
+} from '@lib/content';
+import { categoryAtPath } from '@lib/content/index-categories';
 import { defaultLocale, getLocaleFromUrl, t } from '@/i18n';
 
 export async function getStaticPaths() {
   const { categories } = await getCategoryList(defaultLocale);
-  const links = getCategoryLinks(categories, '');
-  return links.map((link) => {
-    const category = getCategoryByLink(categories, link);
+  return getCategoryLinks(categories, '').map((link) => {
+    const path = link.split('/').map(getCategoryNameByLink);
     return {
       params: { slug: link },
-      props: { category },
+      props: { category: categoryAtPath(categories, path), path, locale: defaultLocale },
     };
   });
 }
 
-const { category: propCategory } = Astro.props;
-const locale = getLocaleFromUrl(Astro.url.pathname);
-const { categories: allCategories, countMap } = await getCategoryList(locale);
+interface Props {
+  category: Category | null;
+  path: string[];
+  locale?: string;
+}
 
-// Re-derive category from locale-aware data to ensure consistency with countMap.
-// When rendered by [lang]/ mirrors, propCategory comes from a different getCategoryList call;
-// re-deriving from the same data source prevents subtle mismatches.
-const slug = Astro.params.slug;
-const category = slug ? getCategoryByLink(allCategories, slug) : propCategory;
+const { category: propCategory, path: propPath, locale: propLocale } = Astro.props;
+const locale = propLocale ?? getLocaleFromUrl(Astro.url.pathname) ?? defaultLocale;
+const allPosts = await getSortedPosts(locale);
 
-// 如果是子分类，只展示当前分类的内容
-const displayCategories = category ? [category] : allCategories;
+// If rendered without props (or by [lang] mirror with different locale)
+const slug = Astro.params.slug as string;
+const path = propPath ?? (slug ? slug.split('/').map(getCategoryNameByLink) : []);
+const { categories } = await getCategoryList(locale);
+const category = propCategory ?? categoryAtPath(categories, path);
 ---
 
 <Layout title={`${t(locale, 'category.postsInCategory', { name: translateCategoryName(category?.name ?? '', locale) })} | ${seoConfig.title}`}>
-  <TwoColumnLayout>
-    <Cover slot="cover" title={t(locale, 'category.postsInCategory', { name: translateCategoryName(category?.name ?? '', locale) })} />
+  <TwoColumnLayout showPostFooter={false}>
+    <Cover compact slot="cover" title={t(locale, 'category.postsInCategory', { name: translateCategoryName(category?.name ?? '', locale) })} />
     <HomeSider slot="sider" />
-    <CategoryPostList rootCategory={category} categories={displayCategories} countMap={countMap} />
+    <CategoryPostList category={category} path={path} allPosts={allPosts} locale={locale} />
   </TwoColumnLayout>
 </Layout>

@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use url::form_urlencoded;
-use url::Url;
 use worker::*;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -155,14 +154,14 @@ fn json_response<T: Serialize>(data: &T) -> Result<Response> {
     let mut headers = Headers::new();
     headers.set("Content-Type", "application/json; charset=utf-8")?;
     apply_cors_headers(&mut headers)?;
-    Ok(Response::from_body(ResponseBody::Body(json_text.into_bytes()))?.with_headers(headers))
+    Ok(Response::ok(json_text)?.with_headers(headers))
 }
 
 fn text_response(text: &str, content_type: &str) -> Result<Response> {
     let mut headers = Headers::new();
     headers.set("Content-Type", content_type)?;
     apply_cors_headers(&mut headers)?;
-    Ok(Response::from_body(ResponseBody::Body(text.as_bytes().to_vec()))?.with_headers(headers))
+    Ok(Response::ok(text)?.with_headers(headers))
 }
 
 fn redirect_response(target_url: &str) -> Result<Response> {
@@ -177,14 +176,14 @@ fn error_response(msg: &str, status: u16) -> Result<Response> {
     let mut headers = Headers::new();
     headers.set("Content-Type", "application/json; charset=utf-8")?;
     apply_cors_headers(&mut headers)?;
-    Ok(Response::from_body(ResponseBody::Body(err_json.to_string().into_bytes()))?
+    Ok(Response::ok(err_json.to_string())?
         .with_status(status)
         .with_headers(headers))
 }
 
 // NetEase HTTP request helper
 async fn fetch_netease(url: &str) -> Result<String> {
-    let mut headers = Headers::new();
+    let headers = Headers::new();
     headers.set(
         "User-Agent",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -205,7 +204,7 @@ async fn fetch_netease(url: &str) -> Result<String> {
 // Audius HTTP request helper
 async fn fetch_audius(path: &str) -> Result<String> {
     let url = format!("https://api.audius.co/v1{}?app_name=meting_wasm", path);
-    let mut headers = Headers::new();
+    let headers = Headers::new();
     headers.set("User-Agent", "webku-meting/1.0")?;
     headers.set("Accept", "application/json")?;
 

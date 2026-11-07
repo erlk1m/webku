@@ -1,0 +1,105 @@
+---
+/**
+ * Falling sakura petals over a page cover.
+ */
+---
+
+<sakura-petals class="pointer-events-none absolute inset-0 z-10" aria-hidden="true" transition:persist="cover-petals">
+  <canvas class="block h-full w-full"></canvas>
+</sakura-petals>
+
+<script>
+  import { readMotionLevel, subscribeMotionLevel } from '@lib/motion-level';
+  import { PetalField } from '@lib/sakura/petal-field';
+
+  const FADE_MS = 900;
+
+  class SakuraPetals extends HTMLElement {
+    private field: PetalField | null = null;
+    private ready = false;
+    private visible = false;
+    private stopTimer = 0;
+    private cleanups: Array<() => void> = [];
+
+    connectedCallback() {
+      const canvas = this.querySelector('canvas');
+      if (!canvas) return;
+      if (!this.field) {
+        try {
+          this.field = new PetalField(canvas);
+        } catch {
+          return;
+        }
+      }
+      const field = this.field;
+
+      const resizeObserver = new ResizeObserver(([entry]) => {
+        field.resize(entry.contentRect.width, entry.contentRect.height);
+      });
+      resizeObserver.observe(this);
+
+      const intersectionObserver = new IntersectionObserver(([entry]) => {
+        this.visible = entry.isIntersecting;
+        this.sync();
+      });
+      intersectionObserver.observe(this);
+
+      const onVisibilityChange = () => this.sync();
+      const onPointerMove = (event: PointerEvent) => {
+        if (field.running && event.pointerType === 'mouse') field.brush(event.clientX, event.clientY);
+      };
+      document.addEventListener('visibilitychange', onVisibilityChange);
+      window.addEventListener('pointermove', onPointerMove, { passive: true });
+      const unsubscribe = subscribeMotionLevel(() => this.sync());
+
+      this.cleanups = [
+        () => resizeObserver.disconnect(),
+        () => intersectionObserver.disconnect(),
+        () => document.removeEventListener('visibilitychange', onVisibilityChange),
+        () => window.removeEventListener('pointermove', onPointerMove),
+        unsubscribe,
+      ];
+
+      this.ready = true;
+      this.sync();
+    }
+
+    disconnectedCallback() {
+      this.visible = false;
+      for (const cleanup of this.cleanups) cleanup();
+      this.cleanups = [];
+      window.clearTimeout(this.stopTimer);
+      this.field?.stop();
+    }
+
+    private sync() {
+      const field = this.field;
+      if (!field || !this.isConnected) return;
+      const onScreen = this.visible && document.visibilityState === 'visible';
+      const level = readMotionLevel();
+      const allowed = this.ready && level !== 'reduced';
+      this.classList.toggle('is-active', allowed);
+      window.clearTimeout(this.stopTimer);
+      if (allowed && onScreen) {
+        field.start();
+      } else if (!onScreen || level === 'reduced') {
+        field.stop();
+      } else {
+        this.stopTimer = window.setTimeout(() => field.stop(), FADE_MS);
+      }
+    }
+  }
+
+  if (!customElements.get('sakura-petals')) customElements.define('sakura-petals', SakuraPetals);
+</script>
+
+<style>
+  sakura-petals {
+    opacity: 0;
+    transition: opacity 900ms cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  sakura-petals.is-active {
+    opacity: 1;
+  }
+</style>

@@ -411,6 +411,11 @@ const keywords = keywordsOverride || siteConfig.keywords || [siteConfig.title];
       <Toaster client:idle />
       <AnnouncementProvider />
     </div>
+
+    <script>
+      import { setupPetalBurst } from '@lib/sakura/petal-burst';
+      setupPetalBurst();
+    </script>
   </body>
 </html>
 

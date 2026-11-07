@@ -55,6 +55,24 @@
   }
 }
 
+/* Click petal burst layer */
+.petal-burst-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.petal-burst {
+  position: absolute;
+  top: 0;
+  left: 0;
+  mask: var(--petal-mask) center / contain no-repeat;
+  -webkit-mask: var(--petal-mask) center / contain no-repeat;
+  will-change: transform, opacity;
+}
+
 /* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -65,3 +83,4 @@
     transition-duration: 0.01ms !important;
   }
 }
+

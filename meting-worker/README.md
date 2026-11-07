@@ -98,3 +98,4 @@ bgm:
 ```
 
 Setelah itu, build atau deploy blog Anda. Seluruh pemutaran musik dan sinkronisasi lirik akan langsung dilayani secara mandiri dan cepat oleh Cloudflare Worker Rust WASM Anda sendiri!
+

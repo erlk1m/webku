@@ -1,0 +1,428 @@
+---
+title: 'Tutorial Membuat Meting API Sendiri dengan Rust WebAssembly (WASM) di Cloudflare Workers'
+description: >-
+  Panduan lengkap dan praktis membangun Meting API musik sendiri menggunakan Rust WebAssembly (WASM) di Cloudflare Workers. Solusi gratis, cepat, aman (strict HTTPS), dan bebas limit untuk memutar musik di blog.
+date: 2026-11-07T15:20:00.000Z
+cover: /img/cover/15.webp
+tags:
+  - rust
+  - tutorial
+  - cloudflare
+  - wasm
+catalog: true
+categories:
+  - rust
+  - tutorial
+sticky: false
+draft: false
+tocNumbering: false
+excludeFromSummary: false
+math: false
+quiz: false
+keywords:
+  - meting api rust
+  - rust webassembly cloudflare workers
+  - rust wasm tutorial
+  - meting cloudflare worker
+  - api musik blog
+  - netease music api wasm
+---
+
+## Pendahuluan
+
+Jika Anda mengelola blog pribadi—khususnya yang berbasis tema seperti **Astro Koharu**, Hexo Shoka, atau menggunakan pemutar musik **APlayer / MetingJS**—Anda pasti akrab dengan fitur pemutar musik latar (*BGM Player*). 
+
+Fitur ini biasanya mengandalkan **Meting API** untuk mengambil data daftar putar (*playlist*), berkas audio MP3, gambar sampul, hingga lirik tersinkronisasi (*synced lyrics* format `.lrc`) langsung dari platform streaming seperti NetEase Cloud Music atau QQ Music.
+
+Namun, mengandalkan server Meting API publik gratisan sering menimbulkan berbagai kendala:
+1. **Masalah Keamanan *Mixed Content***: Banyak API publik yang mengembalikan URL audio atau lirik dengan protokol `http://`. Pada website modern berprotokol `https://`, browser modern (Chrome, Firefox, Safari) akan memblokir request tersebut secara otomatis demi keamanan.
+2. ***Rate Limiting* & *Downtime***: Server publik sering kali mengalami *overload* atau IP-nya diblokir sementara oleh penyedia musik.
+3. **Privasi & Kontrol**: Kita tidak bisa memodifikasi atau menambahkan penyedia musik alternatif (misalnya Audius atau penyimpanan R2 sendiri).
+
+Solusi terbaik dan paling elegan adalah **membangun Meting API milik sendiri**. Dengan memanfaatkan **Rust WebAssembly (WASM)** di atas jaringan serverless **Cloudflare Workers**, kita bisa mendapatkan API yang:
+- **100% Gratis**: Termasuk dalam kuota *free tier* Cloudflare (100.000 request per hari).
+- **Eksekusi Cepat di Edge**: Cold start mendekati 0 milidetik dan dieksekusi di ratusan data center Cloudflare di seluruh dunia.
+- **Aman & Tanpa Mixed Content**: Semua respons dipaksa menggunakan HTTPS dan header CORS lengkap.
+
+Artikel ini akan memandu Anda membuat Meting API menggunakan Rust WASM dari awal hingga tahap deployment ke Cloudflare Workers.
+
+---
+
+## Arsitektur: Mengapa Rust + WebAssembly di Cloudflare Workers?
+
+Cloudflare Workers mendukung eksekusi WebAssembly melalui runtime berbasis V8 (*workerd*). Dengan menggunakan SDK resmi `workers-rs`, kode Rust kita akan dikompilasi menjadi binary WASM (`wasm32-unknown-unknown`) dan dipaketkan bersama runner JavaScript tipis (`shim.mjs`).
+
+```
+Pengunjung Blog ──> Cloudflare Edge Worker (Rust WASM) ──> NetEase / Audius API
+     │                            │                                   │
+     └────── <JSON / LRC / 302> ──┴────────── <Direct Stream> ────────┘
+```
+
+Keunggulan pendekatan ini:
+- **Ukuran Binary Sangat Ringkas**: Kode biner WASM yang dihasilkan hanya berukuran beberapa ratus kilobita.
+- **Keamanan Memori (*Memory Safety*)**: Sistem *ownership* dan penanganan tipe data kuat pada Rust meminimalkan bug atau crash saat memproses payload JSON musik yang kompleks.
+- **Zero-Server Maintenance**: Tidak perlu menyewa VPS, mengurus sertifikat SSL Let's Encrypt, ataupun melakukan update OS berkala.
+
+---
+
+## Prasyarat dan Instalasi Toolchain
+
+Sebelum memulai, pastikan komputer Anda telah terpasang:
+1. **Rust & Cargo** (minimal Rust 1.80+). Cek dengan perintah:
+   ```bash
+   rustc --version
+   cargo --version
+   ```
+2. **Target WebAssembly**:
+   Tambahkan target kompilasi WASM ke Rust toolchain:
+   ```bash
+   rustup target add wasm32-unknown-unknown
+   ```
+3. **Node.js & Wrangler CLI**:
+   Wrangler adalah alat CLI resmi dari Cloudflare untuk menguji dan melakukan deploy Workers:
+   ```bash
+   npx wrangler --version
+   ```
+
+---
+
+## Langkah 1: Struktur Proyek
+
+Buat direktori baru untuk proyek Worker, misalnya bernama `meting-worker`:
+
+```text
+meting-worker/
+├── Cargo.toml          # Konfigurasi dependensi Rust
+├── wrangler.toml       # Konfigurasi Cloudflare Workers
+├── src/
+│   └── lib.rs          # Logika utama API Meting dalam Rust
+└── README.md
+```
+
+---
+
+## Langkah 2: Konfigurasi Cargo.toml
+
+Buka berkas `Cargo.toml`. Kita akan menggunakan library `worker` versi terbaru, `serde` untuk deserialisasi JSON musik, dan `url` untuk manipulasi query parameters.
+
+```toml
+[package]
+name = "meting-api-worker"
+version = "0.1.0"
+edition = "2021"
+description = "High-performance Meting Music API built with Rust WebAssembly for Cloudflare Workers"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+worker = "0.8.7"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+url = "2.5"
+
+[profile.release]
+opt-level = "s"      # Optimasi untuk ukuran biner kecil
+lto = true           # Link Time Optimization
+codegen-units = 1
+```
+
+> **Catatan Penting**: Tipe crate harus dideklarasikan sebagai `crate-type = ["cdylib"]` agar compiler Rust menghasilkan biner pustaka dinamis C yang kompatibel dengan runner WebAssembly Cloudflare.
+
+---
+
+## Langkah 3: Konfigurasi wrangler.toml
+
+Berkas `wrangler.toml` memberi tahu Cloudflare bagaimana Worker harus dibangun dan di mana berkas biner output berada:
+
+```toml
+name = "meting-api-worker"
+main = "build/worker/shim.mjs"
+compatibility_date = "2024-09-23"
+
+[build]
+command = "cargo install -q worker-build && worker-build --release --no-opt"
+```
+
+> **Tips:** Bendera `--no-opt` digunakan pada `worker-build` untuk mempercepat proses kompilasi tanpa perlu mengunduh `wasm-opt` eksternal dari GitHub setiap kali melakukan build di lingkungan lokal.
+
+---
+
+## Langkah 4: Menulis Logika API di Rust (`src/lib.rs`)
+
+Sekarang, mari kita tulis kode utama di `src/lib.rs`.
+
+### 1. Struktur Data Lagu (Format Standar Meting)
+
+Format standar Meting yang diharapkan oleh pemutar musik (seperti APlayer atau Shoka BGM) adalah array objek JSON dengan atribut:
+- `name`: Judul lagu
+- `artist`: Nama artis/penyanyi
+- `url`: Tautan streaming audio MP3
+- `pic`: Tautan gambar album cover
+- `lrc`: Tautan untuk mengambil lirik tersinkronisasi (.lrc)
+
+```rust
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use url::form_urlencoded;
+use worker::*;
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct MetingSong {
+    pub name: String,
+    pub artist: String,
+    pub url: String,
+    pub pic: String,
+    pub lrc: String,
+}
+```
+
+### 2. Header CORS dan Helper Response
+
+Setiap API publik yang dipanggil dari frontend web wajib menyertakan header CORS (*Cross-Origin Resource Sharing*):
+
+```rust
+fn apply_cors_headers(headers: &mut Headers) -> Result<()> {
+    headers.set("Access-Control-Allow-Origin", "*")?;
+    headers.set("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS")?;
+    headers.set("Access-Control-Allow-Headers", "*")?;
+    headers.set("Access-Control-Max-Age", "86400")?;
+    headers.set("Cache-Control", "public, max-age=3600, s-maxage=86400")?;
+    Ok(())
+}
+
+fn json_response<T: Serialize>(data: &T) -> Result<Response> {
+    let json_text = serde_json::to_string(data).map_err(|e| Error::from(e.to_string()))?;
+    let mut headers = Headers::new();
+    headers.set("Content-Type", "application/json; charset=utf-8")?;
+    apply_cors_headers(&mut headers)?;
+    Ok(Response::ok(json_text)?.with_headers(headers))
+}
+
+fn text_response(text: &str, content_type: &str) -> Result<Response> {
+    let mut headers = Headers::new();
+    headers.set("Content-Type", content_type)?;
+    apply_cors_headers(&mut headers)?;
+    Ok(Response::ok(text)?.with_headers(headers))
+}
+
+fn redirect_response(target_url: &str) -> Result<Response> {
+    let mut headers = Headers::new();
+    headers.set("Location", target_url)?;
+    apply_cors_headers(&mut headers)?;
+    Ok(Response::empty()?.with_status(302).with_headers(headers))
+}
+```
+
+### 3. Permintaan ke NetEase Cloud Music dengan Header Asli
+
+Server NetEase memeriksa header HTTP pengunjung untuk menyaring bot. Kita menambahkan header `User-Agent`, `Referer`, dan `Cookie` sederhana agar permintaan kita selalu diterima:
+
+```rust
+async fn fetch_netease(url: &str) -> Result<String> {
+    let headers = Headers::new();
+    headers.set(
+        "User-Agent",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    )?;
+    headers.set("Referer", "https://music.163.com/")?;
+    headers.set("Cookie", "os=pc; osver=Microsoft-Windows-10; appver=2.9.8; channel=netease")?;
+
+    let mut init = RequestInit::new();
+    init.with_headers(headers);
+    init.with_method(Method::Get);
+
+    let req = Request::new_with_init(url, &init)?;
+    let mut res = Fetch::Request(req).send().await?;
+    res.text().await
+}
+```
+
+### 4. Handler Operasi NetEase (Playlist, Lyric, Audio URL)
+
+Untuk operasi daftar putar (`type=playlist`), kita memanggil endpoint resmi `https://music.163.com/api/v3/playlist/detail?id={id}`, memetakan data lagu ke dalam `Vec<MetingSong>`, dan menormalisasi seluruh tautan gambar ke `https://`:
+
+```rust
+async fn handle_netease(
+    req_type: &str,
+    id: &str,
+    base_url: &str,
+    params: &HashMap<String, String>,
+) -> Result<Response> {
+    match req_type {
+        "playlist" => {
+            let api_url = format!("https://music.163.com/api/v3/playlist/detail?id={}", id);
+            let body = fetch_netease(&api_url).await?;
+            let parsed: NeteasePlaylistResponse = serde_json::from_str(&body)
+                .map_err(|e| Error::from(format!("Failed to parse playlist: {}", e)))?;
+
+            let tracks = parsed.playlist.map(|p| p.tracks).unwrap_or_default();
+            let songs: Vec<MetingSong> = tracks
+                .into_iter()
+                .map(|t| {
+                    let artist = t.ar.into_iter().map(|a| a.name).collect::<Vec<_>>().join(" / ");
+                    let pic = t.al
+                        .and_then(|a| a.pic_url)
+                        .unwrap_or_default()
+                        .replace("http://", "https://");
+
+                    MetingSong {
+                        name: t.name,
+                        artist: if artist.is_empty() { "Unknown".to_string() } else { artist },
+                        url: format!("https://music.163.com/song/media/outer/url?id={}.mp3", t.id),
+                        pic,
+                        lrc: format!("{}/?server=netease&type=lrc&id={}", base_url, t.id),
+                    }
+                })
+                .collect();
+
+            json_response(&songs)
+        }
+
+        "lrc" | "lyric" => {
+            let api_url = format!("https://music.163.com/api/song/lyric?id={}&lv=-1&kv=-1&tv=-1", id);
+            let body = fetch_netease(&api_url).await?;
+            let parsed: NeteaseLyricResponse = serde_json::from_str(&body).unwrap_or(NeteaseLyricResponse { lrc: None });
+
+            let lyric = parsed
+                .lrc
+                .and_then(|l| l.lyric)
+                .unwrap_or_else(|| "[00:00.00] Lirik tidak tersedia".to_string());
+
+            if params.get("format").map(|f| f.as_str()) == Some("json") {
+                json_response(&serde_json::json!({ "lyric": lyric }))
+            } else {
+                text_response(&lyric, "text/plain; charset=utf-8")
+            }
+        }
+
+        "url" => {
+            // Redirect 302 langsung ke NetEase CDN audio stream
+            let audio_url = format!("https://music.163.com/song/media/outer/url?id={}.mp3", id);
+            redirect_response(&audio_url)
+        }
+
+        _ => Response::error("Unsupported operation", 400),
+    }
+}
+```
+
+### 5. Entry Point Utama Worker (`#[event(fetch)]`)
+
+Fungsi utama mengekstrak parameter query (`server`, `type`, `id`) dan menangani preflight `OPTIONS` secara otomatis:
+
+```rust
+#[event(fetch)]
+pub async fn main(req: Request, _env: Env, _ctx: Context) -> Result<Response> {
+    // 1. CORS Preflight
+    if req.method() == Method::Options {
+        let mut headers = Headers::new();
+        apply_cors_headers(&mut headers)?;
+        return Ok(Response::empty()?.with_status(204).with_headers(headers));
+    }
+
+    let url = req.url()?;
+    let base_url = format!("{}://{}", url.scheme(), url.host_str().unwrap_or(""));
+    let params: HashMap<String, String> = url.query_pairs().into_owned().collect();
+
+    let server = params.get("server").map(|s| s.as_str()).unwrap_or("netease");
+    let req_type = match params.get("type") {
+        Some(t) => t.as_str(),
+        None => {
+            return json_response(&serde_json::json!({
+                "service": "Meting API (Rust WebAssembly)",
+                "author": "Erlk1m",
+                "version": "1.0.0",
+                "runtime": "Cloudflare Workers / wasm32"
+            }));
+        }
+    };
+
+    let id = params.get("id").map(|s| s.as_str()).unwrap_or("");
+    if id.is_empty() {
+        return Response::error("Parameter id wajib diisi", 400);
+    }
+
+    match server {
+        "netease" => handle_netease(req_type, id, &base_url, &params).await,
+        _ => Response::error("Server musik tidak didukung", 400),
+    }
+}
+```
+
+---
+
+## Langkah 5: Uji Coba Server Lokal
+
+Sebelum mendeploy ke Cloudflare, uji Worker di komputer lokal Anda:
+
+```bash
+npx wrangler dev
+```
+
+Wrangler akan mengompilasi Rust ke WebAssembly dan menjalankan server lokal di `http://localhost:8787`.
+
+Buka browser atau terminal lain dan uji endpoint-nya:
+* **Cek Status**: `http://localhost:8787/`
+* **Ambil Playlist NetEase**:
+  ```bash
+  curl "http://localhost:8787/?server=netease&type=playlist&id=8676645748"
+  ```
+* **Ambil Lirik Lagu**:
+  ```bash
+  curl "http://localhost:8787/?server=netease&type=lrc&id=3313423455"
+  ```
+
+---
+
+## Langkah 6: Deploy ke Cloudflare Workers
+
+Setelah pengujian lokal berhasil, Anda siap merilisnya ke internet global:
+
+1. **Login ke akun Cloudflare**:
+   ```bash
+   npx wrangler login
+   ```
+2. **Deploy Worker**:
+   ```bash
+   npx wrangler deploy
+   ```
+
+Setelah proses upload selesai, Wrangler akan memberikan URL publik Worker Anda, misalnya:
+```text
+Deployed meting-api-worker triggers (1.20 sec)
+  https://meting-api-worker.erlkim.workers.dev
+```
+
+---
+
+## Langkah 7: Menghubungkan ke Blog Pribadi
+
+Sekarang Anda sudah memiliki API Meting sendiri yang berjalan di Cloudflare Workers. Anda tinggal menghubungkannya ke konfigurasi blog Anda.
+
+Contoh konfigurasi pada file `config/site.yaml` blog Koharu / Shoka:
+
+```yaml
+bgm:
+  enabled: true
+  metingApi: https://meting-api-worker.erlkim.workers.dev/ # URL Worker Rust WASM Anda
+  audio:
+    - title: Anime & Vocaloid
+      list:
+        - "https://music.163.com/playlist?id=8676645748"
+        - "https://music.163.com/playlist?id=8882890045"
+```
+
+Begitu blog di-deploy ulang, pemutar musik di situs Anda akan langsung mengambil playlist, stream audio, gambar album, dan lirik sinkron dari API Rust WASM milik Anda sendiri.
+
+---
+
+## Kesimpulan
+
+Dengan memadukan kekuatan **Rust**, portabilitas **WebAssembly**, dan keandalan **Cloudflare Workers**, kita berhasil menciptakan server API musik mandiri yang:
+- **Cepat dan responsif**: Latensi ultra-rendah berkat jaringan edge global Cloudflare.
+- **Bebas masalah Mixed Content**: Semua data dijamin berjalan di atas protokol HTTPS yang valid.
+- **Hemat biaya**: Tidak ada tagihan server bulanan.
+
+Selamat mencoba membuat Meting API Rust WASM Anda sendiri! Jika ada pertanyaan atau kendala seputar konfigurasi Rust dan Cloudflare Workers, silakan tinggalkan pesan atau komentar di bawah.
+

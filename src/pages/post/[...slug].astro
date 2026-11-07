@@ -24,7 +24,7 @@ import {
 import { toPostRef } from '@lib/content/transforms';
 import PostPagination from '@components/post/PostPagination.astro';
 import PostFooter from '@components/post/PostFooter.astro';
-import { formatForSeo } from '@lib/date';
+import { displayDate, formatForSeo } from '@lib/date';
 import { encodeSlug } from '@lib/route';
 import { getOgImageUrl } from '@lib/seo/og-image';
 import { Icon } from 'astro-icon/components';
@@ -216,6 +216,15 @@ const nextPost = currentIndex >= 0 && currentIndex < allPosts.length - 1 ? toPos
       <article class="prose md:prose-sm dark:prose-invert" data-pagefind-body>
         <CustomContent Content={Content} />
       </article>
+      <div class="self-end text-end mt-8 py-3 px-4 border-y border-border/80 text-xs text-muted-foreground leading-relaxed max-w-md w-full">
+        <p>
+          <span class="opacity-70">Penulis:</span> <strong class="text-foreground/90">{siteConfig.author ?? siteConfig.name}</strong> · 
+          <span class="opacity-70">Lisensi:</span> <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer" class="hover:text-primary transition-colors underline underline-offset-2">CC BY-NC-SA 4.0</a>
+        </p>
+        <p class="opacity-70 mt-1">
+          Diterbitkan pada <time datetime={formatForSeo(date)}>{displayDate.date(date)}</time>
+        </p>
+      </div>
       <PostPagination prevPost={prevPost} nextPost={nextPost} locale={locale} />
       <PostFooter post={post} />
       <Comment />

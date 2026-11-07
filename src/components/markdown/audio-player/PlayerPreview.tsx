@@ -26,29 +26,68 @@ interface PlayerPreviewProps {
 const DEFAULT_LRC_LINE_HEIGHT = 32;
 const DEFAULT_LRC_CONTAINER_HEIGHT = 128;
 
-/** Resolve LRC: if it's a URL, fetch it; otherwise use as-is. */
-function useLrcText(lrcSource: string | undefined): string {
+/** Resolve LRC: if it's a URL, fetch it; otherwise use as-is. If empty, query LRCLIB for synced lyrics. */
+function useLrcText(lrcSource: string | undefined, trackName?: string, artistName?: string): string {
   const [text, setText] = useState('');
 
   useEffect(() => {
-    if (!lrcSource) {
+    if (lrcSource) {
+      if (lrcSource.startsWith('http')) {
+        const controller = new AbortController();
+        fetch(lrcSource, { signal: controller.signal })
+          .then((r) => r.text())
+          .then(setText)
+          .catch((error: unknown) => {
+            if (!(error instanceof DOMException && error.name === 'AbortError')) setText('');
+          });
+        return () => controller.abort();
+      }
+      setText(lrcSource);
+      return;
+    }
+
+    // Fallback: If no LRC is provided (e.g. Audius / direct audio), query LRCLIB for synced lyrics
+    if (!trackName) {
       setText('');
       return;
     }
 
-    if (lrcSource.startsWith('http')) {
-      const controller = new AbortController();
-      fetch(lrcSource, { signal: controller.signal })
-        .then((r) => r.text())
-        .then(setText)
-        .catch((error: unknown) => {
-          if (!(error instanceof DOMException && error.name === 'AbortError')) setText('');
-        });
-      return () => controller.abort();
+    const controller = new AbortController();
+    const cleanTitle = trackName
+      .replace(/\[.*?\]|\(.*?\)/g, '')
+      .replace(/- Remix.*/i, '')
+      .trim();
+
+    const query = new URLSearchParams({
+      track_name: cleanTitle || trackName,
+    });
+    if (artistName && artistName !== 'Unknown' && artistName !== 'NCS') {
+      query.set('artist_name', artistName);
     }
 
-    setText(lrcSource);
-  }, [lrcSource]);
+    fetch(`https://lrclib.net/api/search?${query.toString()}`, {
+      signal: controller.signal,
+      headers: { 'User-Agent': 'webku-blog/1.0' },
+    })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => {
+        if (!controller.signal.aborted && Array.isArray(data) && data.length > 0) {
+          const match = data.find((d: any) => d.syncedLyrics) || data[0];
+          if (match?.syncedLyrics) {
+            setText(match.syncedLyrics);
+          } else if (match?.plainLyrics) {
+            setText(match.plainLyrics);
+          } else if (match?.instrumental) {
+            setText('[00:00.00] ♪ Instrumental ♪');
+          }
+        }
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setText('');
+      });
+
+    return () => controller.abort();
+  }, [lrcSource, trackName, artistName]);
 
   return text;
 }
@@ -71,7 +110,7 @@ export const PlayerPreview = memo(function PlayerPreview({
     });
     return () => controller.abort();
   }, [source]);
-  const lrcText = useLrcText(track?.lrc);
+  const lrcText = useLrcText(track?.lrc, track?.name, track?.artist);
   const lrcLines = useMemo(() => parseLrc(lrcText), [lrcText]);
   const currentLrcIndex = usePlaybackLrcIndex(timeStore, lrcLines);
 

@@ -2,7 +2,8 @@
  * Meting API client — resolves music platform URLs to playable audio streams.
  *
  * Ported from Shoka player.js URL parsing + Meting API integration.
- * Supports NetEase Cloud Music, QQ Music, direct audio URLs, and R2 playlist URLs.
+ * Supports NetEase Cloud Music, QQ Music, Audius (NCS / Trending / Playlists),
+ * direct audio URLs, and R2 playlist URLs.
  */
 
 const DEFAULT_API = 'https://163.hyc.moe/';
@@ -48,6 +49,11 @@ export function parseMusicUrl(url: string): ParsedUrl | null {
 /** Check if a string is a direct audio URL (mp3, ogg, wav, flac, etc.) */
 function isDirectAudioUrl(url: string): boolean {
   return /\.(mp3|ogg|wav|flac|m4a|aac)(\?|$)/i.test(url);
+}
+
+/** Check if a URL is an Audius URL */
+function isAudiusUrl(url: string): boolean {
+  return /audius\.co/i.test(url);
 }
 
 /** Check if a URL is an R2 playlist worker URL */
@@ -120,6 +126,102 @@ async function fetchR2Playlist(url: string): Promise<MetingSong[]> {
   return songs;
 }
 
+interface AudiusTrack {
+  id: string;
+  title: string;
+  user?: {
+    name?: string;
+    handle?: string;
+  };
+  artwork?: {
+    '150x150'?: string;
+    '480x480'?: string;
+    '1000x1000'?: string;
+  };
+}
+
+const AUDIUS_PROVIDERS = [
+  'https://api.audius.co',
+  'https://discoveryprovider.audius.co',
+  'https://audius-discovery-1.cultur3stake.com',
+];
+
+/** Fetch songs from Audius API (trending, user profile/tracks, or playlist). */
+async function fetchAudius(url: string): Promise<MetingSong[]> {
+  const cacheKey = `audius:${url}`;
+  const cached = getFromCache(cacheKey);
+  if (cached) return cached;
+
+  const appName = 'webku';
+
+  let path = '';
+  try {
+    const u = new URL(url);
+    const pathParts = u.pathname.replace(/^\/+|\/+$/g, '').split('/').filter(Boolean);
+
+    if (pathParts[0] === 'trending') {
+      const time = u.searchParams.get('timeRange') || u.searchParams.get('time') || 'week';
+      path = `/v1/tracks/trending?app_name=${appName}&time=${time}&limit=50`;
+    } else if (pathParts.length === 1 || (pathParts.length === 2 && pathParts[1] === 'tracks')) {
+      const handle = pathParts[0];
+      path = `/v1/users/handle/${encodeURIComponent(handle)}/tracks?app_name=${appName}&limit=50`;
+    } else {
+      path = `/v1/resolve?url=${encodeURIComponent(url)}&app_name=${appName}`;
+    }
+  } catch {
+    return [];
+  }
+
+  for (const host of AUDIUS_PROVIDERS) {
+    try {
+      const apiUrl = `${host}${path}`;
+      const response = await fetch(apiUrl);
+      if (!response.ok) continue;
+
+      const resJson: any = await response.json();
+      let rawTracks: AudiusTrack[] = [];
+
+      if (Array.isArray(resJson.data)) {
+        rawTracks = resJson.data;
+      } else if (resJson.data?.tracks && Array.isArray(resJson.data.tracks)) {
+        rawTracks = resJson.data.tracks;
+      } else if (resJson.data?.id && (resJson.data?.handle || resJson.data?.name) && !resJson.data?.title) {
+        const userTracksUrl = `${host}/v1/users/${encodeURIComponent(resJson.data.id)}/tracks?app_name=${appName}&limit=50`;
+        const userTracksRes = await fetch(userTracksUrl);
+        if (userTracksRes.ok) {
+          const uJson: any = await userTracksRes.json();
+          if (Array.isArray(uJson.data)) {
+            rawTracks = uJson.data;
+          }
+        }
+      } else if (resJson.data?.id && resJson.data?.title) {
+        rawTracks = [resJson.data];
+      }
+
+      if (rawTracks.length > 0) {
+        const songs: MetingSong[] = rawTracks
+          .filter((t) => t && t.id && t.title)
+          .map((t) => ({
+            name: t.title,
+            artist: t.user?.name || 'NoCopyrightSounds',
+            url: `${host}/v1/tracks/${t.id}/stream?app_name=${appName}`,
+            pic: t.artwork?.['480x480'] || t.artwork?.['150x150'] || t.artwork?.['1000x1000'] || '',
+            lrc: '',
+          }));
+
+        if (songs.length > 0) {
+          setCache(cacheKey, songs);
+          return songs;
+        }
+      }
+    } catch {
+      // Continue to next provider on network error
+    }
+  }
+
+  return [];
+}
+
 /** Fetch songs from Meting API for a single parsed URL. */
 export async function fetchMeting(server: string, type: string, id: string, apiUrl?: string): Promise<MetingSong[]> {
   const cacheKey = getCacheKey(server, type, id);
@@ -143,6 +245,9 @@ export async function fetchMeting(server: string, type: string, id: string, apiU
 export async function resolvePlaylist(urls: string[], apiUrl?: string): Promise<MetingSong[]> {
   const results = await Promise.allSettled(
     urls.map((url) => {
+      if (isAudiusUrl(url)) {
+        return fetchAudius(url);
+      }
       if (isR2PlaylistUrl(url)) {
         return fetchR2Playlist(url);
       }

@@ -441,9 +441,12 @@ seo:
 bgm:
   enabled: true
   audio:
-    - title: Playlist Favorit
+    - title: NoCopyrightSounds (NCS)
       list:
-        - "https://r2-playlist.erlkim.workers.dev/playlist?prefix="
+        - "https://audius.co/ncsounds"
+    - title: Trending Audius
+      list:
+        - "https://audius.co/trending?timeRange=week"
 
 christmas:
   enabled: false # Saklar utama

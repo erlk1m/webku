@@ -42,3 +42,4 @@ export function createPetalSprites(scale: number): HTMLCanvasElement[] {
 export const PETAL_MASK = `url("data:image/svg+xml,${encodeURIComponent(
   `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${PETAL_VIEWBOX.width} ${PETAL_VIEWBOX.height}'><path d='${PETAL_PATH}'/></svg>`,
 )}")`;
+

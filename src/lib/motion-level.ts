@@ -42,3 +42,4 @@ export function subscribeMotionLevel(onChange: () => void): () => void {
 export function isMotionDisabled(): boolean {
   return readMotionLevel() === 'reduced';
 }
+

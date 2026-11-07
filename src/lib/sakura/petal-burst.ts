@@ -117,3 +117,4 @@ export function setupPetalBurst(): void {
     { passive: true },
   );
 }
+

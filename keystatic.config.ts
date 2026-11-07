@@ -53,7 +53,7 @@ export default config({
         keywords: fields.array(fields.text({ label: 'Keyword' }), { label: 'Keywords', itemLabel: (props) => props.value }),
         content: fields.markdoc({
           label: 'Konten',
-          extension: 'mdoc',
+          extension: 'md',
         }),
       },
     }),

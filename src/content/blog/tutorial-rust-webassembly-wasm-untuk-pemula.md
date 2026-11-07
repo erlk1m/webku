@@ -27,11 +27,9 @@ keywords:
   - rust browser
 ---
 
-# Tutorial Rust WebAssembly (WASM): Menjalankan Kode Rust di Browser
-
 ## Pendahuluan
 
-WebAssembly (WASM) telah merevolusi kemampuan browser modern. Jika sebelumnya JavaScript adalah satu-satunya bahasa pemrograman yang dapat berjalan langsung di sisi client (browser), kini WebAssembly memungkinkan kita menjalankan kode biner berkecepatan mendekati native (*near-native speed*).
+**WebAssembly (WASM)** telah merevolusi kemampuan browser modern. Jika sebelumnya JavaScript adalah satu-satunya bahasa pemrograman yang dapat berjalan langsung di sisi client (browser), kini WebAssembly memungkinkan kita menjalankan kode biner berkecepatan tinggi dengan performa mendekati native (*near-native speed*).
 
 Dari sekian banyak bahasa pemrograman yang mendukung kompilasi ke WebAssembly, **Rust** adalah pilihan yang paling populer dan matang. Mengapa?
 
@@ -40,7 +38,9 @@ Dari sekian banyak bahasa pemrograman yang mendukung kompilasi ke WebAssembly, *
 - **Ekosistem Terbaik:** Tools seperti `wasm-pack` dan library `wasm-bindgen` membuat komunikasi dua arah antara Rust dan JavaScript terasa sangat mulus.
 - **Aman dan Andal:** Menghindari *memory leak* dan kesalahan akses memori sejak fase kompilasi.
 
-Dalam tutorial ini, kita akan belajar langkah demi langkah membuat modul WebAssembly dengan Rust dan menjalankannya di halaman web menggunakan HTML dan JavaScript modern.
+:::note
+WebAssembly dirancang bukan untuk menggantikan JavaScript, melainkan untuk **bekerja berdampingan** dengan JavaScript. Gunakan JavaScript untuk manipulasi DOM dan routing, serta gunakan WebAssembly untuk komputasi berat, manipulasi media, enkripsi, dan grafis!
+:::
 
 ---
 
@@ -51,7 +51,7 @@ Sebelum mulai, pastikan komputer Anda sudah terpasang perangkat lunak berikut:
 ### 1. Rust dan Cargo
 Jika belum memiliki Rust, pasang melalui toolchain resmi:
 
-```bash
+```bash title="Terminal"
 # Untuk Linux / macOS / WSL
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
@@ -63,15 +63,14 @@ cargo --version
 ### 2. WASM Target
 Tambahkan target kompilasi WebAssembly ke toolchain Rust Anda:
 
-```bash
+```bash title="Terminal"
 rustup target add wasm32-unknown-unknown
 ```
 
 ### 3. wasm-pack
 `wasm-pack` adalah tool serbaguna untuk membangun, mengemas, dan mengoptimalkan package WebAssembly Rust agar siap dikonsumsi oleh JavaScript / bundler web.
 
-```bash
-# Menggunakan cargo install
+```bash title="Terminal"
 cargo install wasm-pack
 ```
 
@@ -81,14 +80,14 @@ cargo install wasm-pack
 
 Buat sebuah library Rust baru menggunakan Cargo:
 
-```bash
+```bash title="Terminal"
 cargo new --lib rust-wasm-demo
 cd rust-wasm-demo
 ```
 
-Struktur folder awal yang dibuat:
+Struktur folder awal yang dihasilkan:
 
-```text
+```text title="Project Tree"
 rust-wasm-demo/
 ├── Cargo.toml
 └── src/
@@ -101,7 +100,7 @@ rust-wasm-demo/
 
 Buka file `Cargo.toml` dan sesuaikan kodenya. Kita perlu memberitahu Cargo agar mengompilasi project ini sebagai `cdylib` (C dynamic library) dan menyertakan dependensi `wasm-bindgen`.
 
-```toml
+```toml title="Cargo.toml"
 [package]
 name = "rust-wasm-demo"
 version = "0.1.0"
@@ -114,9 +113,9 @@ crate-type = ["cdylib"]
 wasm-bindgen = "0.2"
 ```
 
-> **Penjelasan:**
-> - `crate-type = ["cdylib"]`: Diperlukan agar compiler Rust menghasilkan file biner `.wasm` yang dapat diekspor, bukan pustaka Rust standar (`rlib`).
-> - `wasm-bindgen`: Jembatan penghubung antara kode Rust dan JavaScript.
+:::tip
+`crate-type = ["cdylib"]` wajib disertakan agar compiler Rust menghasilkan file biner `.wasm` yang dapat diekspor, bukan pustaka Rust standar (`rlib`).
+:::
 
 ---
 
@@ -124,7 +123,7 @@ wasm-bindgen = "0.2"
 
 Buka file `src/lib.rs` dan ganti isinya dengan kode berikut:
 
-```rust
+```rust title="src/lib.rs"
 use wasm_bindgen::prelude::*;
 
 // Mengimpor fungsi `alert` dari Web API (JavaScript window)
@@ -156,7 +155,7 @@ pub fn balik_kata(teks: &str) -> String {
 }
 ```
 
-Makro `#[wasm_bindgen]` bertugas otomatis menangani marshalling tipe data kompleks seperti `String` dan `&str` agar bisa dimengerti oleh runtime JavaScript.
+Makro `#[wasm_bindgen]` bertugas otomatis menangani *marshalling* tipe data kompleks seperti `String` dan `&str` agar bisa dimengerti oleh runtime JavaScript.
 
 ---
 
@@ -164,7 +163,7 @@ Makro `#[wasm_bindgen]` bertugas otomatis menangani marshalling tipe data komple
 
 Jalankan perintah berikut di direktori project:
 
-```bash
+```bash title="Terminal"
 wasm-pack build --target web
 ```
 
@@ -178,9 +177,9 @@ Perintah di atas akan membuat folder baru bernama `pkg/` yang berisi:
 
 ## Langkah 5: Membuat Antarmuka Web (HTML & JavaScript)
 
-Sekarang mari buat file `index.html` di root project untuk menguji modul WASM yang sudah dibuat:
+Sekarang buat file `index.html` di root project untuk menguji modul WASM yang sudah dibuat:
 
-```html
+```html title="index.html"
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -288,7 +287,7 @@ Sekarang mari buat file `index.html` di root project untuk menguji modul WASM ya
 
 Karena WebAssembly memuat file `.wasm` secara asinkron menggunakan protokol `fetch`, browser tidak mengizinkan membukanya langsung via `file://`. Anda perlu menjalankannya lewat web server lokal:
 
-```bash
+```bash title="Terminal"
 # Menggunakan Python
 python3 -m http.server 8080
 
@@ -316,7 +315,7 @@ Meskipun WebAssembly sangat cepat, bukan berarti semua kode JavaScript harus dig
 
 Untuk deployment ke lingkungan produksi, ukuran file biner `.wasm` bisa diperkecil drastis dengan menambahkan profil release di `Cargo.toml`:
 
-```toml
+```toml title="Cargo.toml"
 [profile.release]
 opt-level = "z"     # Optimalkan ukuran binary sekecil mungkin
 lto = true          # Link Time Optimization antar modul
@@ -326,11 +325,13 @@ panic = "abort"     # Hapus pesan unwind panic untuk memangkas bytes
 
 Kompilasi mode produksi:
 
-```bash
+```bash title="Terminal"
 wasm-pack build --target web --release
 ```
 
-Dengan konfigurasi ini, ukuran file `.wasm` bisa menyusut hingga lebih dari 60%!
+:::tip
+Dengan optimasi di atas, ukuran file `.wasm` hasil kompilasi bisa menyusut hingga lebih dari **60%**, membuat proses download di browser client menjadi sangat instan!
+:::
 
 ---
 
@@ -339,4 +340,3 @@ Dengan konfigurasi ini, ukuran file `.wasm` bisa menyusut hingga lebih dari 60%!
 Menggabungkan Rust dan WebAssembly membuka jalan baru untuk membangun aplikasi web berperforma tinggi. Dengan ekosistem `wasm-bindgen` dan `wasm-pack`, proses integrasi ke aplikasi web modern menjadi sangat intuitif tanpa mengorbankan keamanan memori khas Rust.
 
 Selamat mencoba, dan mulailah membawa kekuatan komputasi native ke dalam browser Anda!
-

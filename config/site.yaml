@@ -447,6 +447,9 @@ bgm:
     - title: Trending Audius
       list:
         - "https://audius.co/trending?timeRange=week"
+    - title: Trending Hip-Hop / Rap
+      list:
+        - "https://audius.co/trending?genre=Hip-Hop%2FRap&timeRange=week"
 
 christmas:
   enabled: false # Saklar utama

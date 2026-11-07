@@ -161,7 +161,9 @@ async function fetchAudius(url: string): Promise<MetingSong[]> {
 
     if (pathParts[0] === 'trending') {
       const time = u.searchParams.get('timeRange') || u.searchParams.get('time') || 'week';
-      path = `/v1/tracks/trending?app_name=${appName}&time=${time}&limit=50`;
+      const genre = u.searchParams.get('genre');
+      const genreParam = genre ? `&genre=${encodeURIComponent(genre)}` : '';
+      path = `/v1/tracks/trending?app_name=${appName}&time=${time}${genreParam}&limit=50`;
     } else if (pathParts.length === 1 || (pathParts.length === 2 && pathParts[1] === 'tracks')) {
       const handle = pathParts[0];
       path = `/v1/users/handle/${encodeURIComponent(handle)}/tracks?app_name=${appName}&limit=50`;

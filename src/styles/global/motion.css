@@ -1,0 +1,67 @@
+/* Motion system - smooth transitions and entrance animations */
+
+:root {
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-quart: cubic-bezier(0.5, 0, 0.75, 0);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+
+  --dur-instant: 120ms;
+  --dur-fast: 200ms;
+  --dur-base: 320ms;
+  --dur-slow: 480ms;
+  --dur-enter: 760ms;
+
+  --motion-travel: 1;
+}
+
+@keyframes motion-rise {
+  from {
+    opacity: 0;
+    transform: translateY(calc(1.5rem * var(--motion-travel)));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes motion-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  .motion-rise {
+    animation: motion-rise var(--dur-enter) var(--ease-out-expo) both;
+    animation-delay: calc(var(--rise-delay, 0ms) + var(--i, 0) * var(--stagger, 120ms));
+  }
+
+  .motion-fade {
+    animation: motion-fade var(--dur-base) var(--ease-out-expo) both;
+  }
+
+  /* Post item card hover micro-interaction */
+  .post-item-card {
+    transition: transform var(--dur-fast) var(--ease-out-expo), box-shadow var(--dur-fast) var(--ease-out-expo);
+  }
+
+  .post-item-card:hover {
+    transform: translateY(-3px);
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+  }
+}

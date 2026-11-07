@@ -5,6 +5,7 @@ description: >-
   arsitektur MoE 42B active params. Benchmark, harga, kemampuan agentic, dan  
   cara deploy-nya.
 date: 2026-06-16T06:24:00.000Z
+cover: /img/cover/11.webp
 tags:
   - xiaomi
   - mimo

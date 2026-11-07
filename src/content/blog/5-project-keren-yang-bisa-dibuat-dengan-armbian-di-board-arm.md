@@ -5,6 +5,7 @@ description: >-
   Pi-hole ad blocker, Home Assistant, Jellyfin media server, dan web server
   dengan Docker.
 date: 2026-06-16T03:57:00.000Z
+cover: /img/cover/2.webp
 tags:
   - armbian
 catalog: true

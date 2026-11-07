@@ -5,6 +5,7 @@ description: >-
   repository hingga menjalankan container pertama untuk Home Assistant, Pi-hole,
   dan Nginx.
 date: 2026-06-16T04:02:00.000Z
+cover: /img/cover/4.webp
 tags:
   - armbian
 catalog: true

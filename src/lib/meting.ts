@@ -77,7 +77,7 @@ interface CacheEntry {
 }
 
 function getCacheKey(server: string, type: string, id: string): string {
-  return `meting:${server}:${type}:${id}`;
+  return `meting:v3:${server}:${type}:${id}`;
 }
 
 function getFromCache(key: string): MetingSong[] | null {
@@ -89,7 +89,13 @@ function getFromCache(key: string): MetingSong[] | null {
       localStorage.removeItem(key);
       return null;
     }
-    return entry.data;
+    // Upgrade any stale http:// to https://
+    return entry.data.map((s) => ({
+      ...s,
+      url: s.url ? s.url.replace(/^http:\/\//i, 'https://') : s.url,
+      pic: s.pic ? s.pic.replace(/^http:\/\//i, 'https://') : s.pic,
+      lrc: s.lrc ? s.lrc.replace(/^http:\/\//i, 'https://') : s.lrc,
+    }));
   } catch {
     return null;
   }
@@ -121,7 +127,12 @@ async function fetchR2Playlist(url: string): Promise<MetingSong[]> {
 
   const data: unknown = await response.json();
   if (!Array.isArray(data)) return [];
-  const songs = data.filter(isMetingSong) as MetingSong[];
+  const songs = (data.filter(isMetingSong) as MetingSong[]).map((s) => ({
+    ...s,
+    url: s.url ? s.url.replace(/^http:\/\//i, 'https://') : s.url,
+    pic: s.pic ? s.pic.replace(/^http:\/\//i, 'https://') : s.pic,
+    lrc: s.lrc ? s.lrc.replace(/^http:\/\//i, 'https://') : s.lrc,
+  }));
   if (songs.length > 0) setCache(cacheKey, songs);
   return songs;
 }
@@ -238,7 +249,12 @@ export async function fetchMeting(server: string, type: string, id: string, apiU
 
   const data: unknown = await response.json();
   if (!Array.isArray(data)) return [];
-  const songs = data.filter(isMetingSong) as MetingSong[];
+  const songs = (data.filter(isMetingSong) as MetingSong[]).map((s) => ({
+    ...s,
+    url: s.url ? s.url.replace(/^http:\/\//i, 'https://') : s.url,
+    pic: s.pic ? s.pic.replace(/^http:\/\//i, 'https://') : s.pic,
+    lrc: s.lrc ? s.lrc.replace(/^http:\/\//i, 'https://') : s.lrc,
+  }));
   if (songs.length > 0) setCache(cacheKey, songs);
   return songs;
 }

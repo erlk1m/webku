@@ -33,12 +33,21 @@ function useLrcText(lrcSource: string | undefined, trackName?: string, artistNam
   useEffect(() => {
     if (lrcSource) {
       if (lrcSource.startsWith('http')) {
+        const secureUrl = lrcSource.replace(/^http:\/\//i, 'https://');
         const controller = new AbortController();
-        fetch(lrcSource, { signal: controller.signal })
-          .then((r) => r.text())
-          .then(setText)
+        fetch(secureUrl, { signal: controller.signal })
+          .then((r) => {
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            return r.text();
+          })
+          .then((t) => {
+            setText(t);
+          })
           .catch((error: unknown) => {
-            if (!(error instanceof DOMException && error.name === 'AbortError')) setText('');
+            if (!(error instanceof DOMException && error.name === 'AbortError')) {
+              console.warn('[LRC] Failed to fetch lyrics from', secureUrl, error);
+              setText('');
+            }
           });
         return () => controller.abort();
       }

@@ -43,3 +43,7 @@ export function isMotionDisabled(): boolean {
   return readMotionLevel() === 'reduced';
 }
 
+export function getScrollBehavior(): ScrollBehavior {
+  return isMotionDisabled() ? 'instant' : 'smooth';
+}
+

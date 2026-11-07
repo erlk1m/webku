@@ -10,9 +10,10 @@ import {
 } from '@lib/glide';
 import { readMotionLevel, subscribeMotionLevel } from '@lib/motion-level';
 import { buildRibbon, type Ribbon, type RibbonRow } from '@lib/toc-ribbon';
-import { clamp } from 'es-toolkit';
 import { type RefObject, useLayoutEffect, useRef } from 'react';
 import type { ReadingFrame, ReadingProgress } from './useReadingProgress';
+
+const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, min), max);
 
 /** Petal lean in degrees per px/s of glide speed, and its cap. */
 const LEAN_PER_SPEED = -0.03;

@@ -15,7 +15,7 @@ categories:
   - tutorial
 sticky: false
 draft: false
-tocNumbering: true
+tocNumbering: false
 excludeFromSummary: false
 math: false
 quiz: false
@@ -48,7 +48,7 @@ WebAssembly dirancang bukan untuk menggantikan JavaScript, melainkan untuk **bek
 
 Sebelum mulai, pastikan komputer Anda sudah terpasang perangkat lunak berikut:
 
-### 1. Rust dan Cargo
+### Rust dan Cargo
 Jika belum memiliki Rust, pasang melalui toolchain resmi:
 
 ```bash title="Terminal"
@@ -60,14 +60,14 @@ rustc --version
 cargo --version
 ```
 
-### 2. WASM Target
+### WASM Target
 Tambahkan target kompilasi WebAssembly ke toolchain Rust Anda:
 
 ```bash title="Terminal"
 rustup target add wasm32-unknown-unknown
 ```
 
-### 3. wasm-pack
+### wasm-pack
 `wasm-pack` adalah tool serbaguna untuk membangun, mengemas, dan mengoptimalkan package WebAssembly Rust agar siap dikonsumsi oleh JavaScript / bundler web.
 
 ```bash title="Terminal"

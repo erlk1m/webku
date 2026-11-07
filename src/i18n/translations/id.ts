@@ -260,6 +260,7 @@ export const uiStrings = {
   'series.latestPost': 'Artikel terbaru',
   'series.viewAll': 'Lihat semua',
   'series.postCount': '{count} artikel',
+  'series.position': '{current} dari {total}',
   'series.noPosts': 'Belum ada artikel seri',
   'series.rss': 'Langganan RSS',
   'series.chromeExtension': 'Ekstensi Chrome',
@@ -299,6 +300,7 @@ export const uiStrings = {
   'toc.title': 'Daftar isi',
   'toc.expand': 'Perluas daftar isi',
   'toc.empty': 'Belum ada daftar isi',
+  'toc.sectionProgress': 'Progres bagian',
 
   // ── Embed ─────────────────────────────────────────────────
   'embed.loadingTweet': 'Memuat Tweet',

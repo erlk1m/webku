@@ -18,6 +18,8 @@
 @import "./theme/encrypted-block.css";
 @import "./components/wave.css";
 @import "./components/category.css";
+@import "./components/sider.css";
+@import "./components/toc.css";
 @import "./components/post.css";
 @import "./components/pagefind.css";
 @import "./components/embed.css";

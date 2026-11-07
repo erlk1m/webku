@@ -1,0 +1,341 @@
+---
+title: 'Tutorial Rust WebAssembly (WASM): Menjalankan Kode Rust di Browser untuk Pemula'
+description: >-
+  Panduan praktis belajar WebAssembly (WASM) dengan Rust dari nol. Pelajari cara
+  kompilasi kode Rust menjadi WebAssembly, integrasi dengan JavaScript, dan
+  menjalankannya langsung di browser.
+date: 2026-11-07T02:55:00.000Z
+tags:
+  - rust
+  - tutorial
+catalog: true
+categories:
+  - rust
+  - tutorial
+sticky: false
+draft: false
+tocNumbering: true
+excludeFromSummary: false
+math: false
+quiz: false
+keywords:
+  - rust wasm
+  - webassembly rust
+  - wasm-pack
+  - tutorial rust pemula
+  - rust browser
+---
+
+# Tutorial Rust WebAssembly (WASM): Menjalankan Kode Rust di Browser
+
+## Pendahuluan
+
+WebAssembly (WASM) telah merevolusi kemampuan browser modern. Jika sebelumnya JavaScript adalah satu-satunya bahasa pemrograman yang dapat berjalan langsung di sisi client (browser), kini WebAssembly memungkinkan kita menjalankan kode biner berkecepatan mendekati native (*near-native speed*).
+
+Dari sekian banyak bahasa pemrograman yang mendukung kompilasi ke WebAssembly, **Rust** adalah pilihan yang paling populer dan matang. Mengapa?
+
+- **Tanpa Garbage Collector (GC):** Rust menggunakan sistem *ownership* untuk manajemen memori, sehingga runtime WASM sangat ramping tanpa overhead jeda GC.
+- **Ukuran Binary Sangat Kecil:** Hanya modul yang benar-benar digunakan yang disertakan dalam output WASM.
+- **Ekosistem Terbaik:** Tools seperti `wasm-pack` dan library `wasm-bindgen` membuat komunikasi dua arah antara Rust dan JavaScript terasa sangat mulus.
+- **Aman dan Andal:** Menghindari *memory leak* dan kesalahan akses memori sejak fase kompilasi.
+
+Dalam tutorial ini, kita akan belajar langkah demi langkah membuat modul WebAssembly dengan Rust dan menjalankannya di halaman web menggunakan HTML dan JavaScript modern.
+
+---
+
+## Prasyarat dan Instalasi Toolchain
+
+Sebelum mulai, pastikan komputer Anda sudah terpasang perangkat lunak berikut:
+
+### 1. Rust dan Cargo
+Jika belum memiliki Rust, pasang melalui toolchain resmi:
+
+```bash
+# Untuk Linux / macOS / WSL
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Verifikasi instalasi
+rustc --version
+cargo --version
+```
+
+### 2. WASM Target
+Tambahkan target kompilasi WebAssembly ke toolchain Rust Anda:
+
+```bash
+rustup target add wasm32-unknown-unknown
+```
+
+### 3. wasm-pack
+`wasm-pack` adalah tool serbaguna untuk membangun, mengemas, dan mengoptimalkan package WebAssembly Rust agar siap dikonsumsi oleh JavaScript / bundler web.
+
+```bash
+# Menggunakan cargo install
+cargo install wasm-pack
+```
+
+---
+
+## Langkah 1: Inisialisasi Project Rust
+
+Buat sebuah library Rust baru menggunakan Cargo:
+
+```bash
+cargo new --lib rust-wasm-demo
+cd rust-wasm-demo
+```
+
+Struktur folder awal yang dibuat:
+
+```text
+rust-wasm-demo/
+├── Cargo.toml
+└── src/
+    └── lib.rs
+```
+
+---
+
+## Langkah 2: Konfigurasi Cargo.toml
+
+Buka file `Cargo.toml` dan sesuaikan kodenya. Kita perlu memberitahu Cargo agar mengompilasi project ini sebagai `cdylib` (C dynamic library) dan menyertakan dependensi `wasm-bindgen`.
+
+```toml
+[package]
+name = "rust-wasm-demo"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = "0.2"
+```
+
+> **Penjelasan:**
+> - `crate-type = ["cdylib"]`: Diperlukan agar compiler Rust menghasilkan file biner `.wasm` yang dapat diekspor, bukan pustaka Rust standar (`rlib`).
+> - `wasm-bindgen`: Jembatan penghubung antara kode Rust dan JavaScript.
+
+---
+
+## Langkah 3: Menulis Kode Rust
+
+Buka file `src/lib.rs` dan ganti isinya dengan kode berikut:
+
+```rust
+use wasm_bindgen::prelude::*;
+
+// Mengimpor fungsi `alert` dari Web API (JavaScript window)
+#[wasm_bindgen]
+extern "C" {
+    fn alert(s: &str);
+}
+
+// Fungsi 1: Menampilkan popup browser dari Rust
+#[wasm_bindgen]
+pub fn sapa(nama: &str) {
+    alert(&format!("Halo {}! Salam dari kode Rust di WebAssembly 🦀", nama));
+}
+
+// Fungsi 2: Komputasi berat (Fibonacci Rekursif) untuk uji performa
+#[wasm_bindgen]
+pub fn hitung_fibonacci(n: u32) -> u32 {
+    match n {
+        0 => 0,
+        1 => 1,
+        _ => hitung_fibonacci(n - 1) + hitung_fibonacci(n - 2),
+    }
+}
+
+// Fungsi 3: Operasi manipulasi string sederhana
+#[wasm_bindgen]
+pub fn balik_kata(teks: &str) -> String {
+    teks.chars().rev().collect()
+}
+```
+
+Makro `#[wasm_bindgen]` bertugas otomatis menangani marshalling tipe data kompleks seperti `String` dan `&str` agar bisa dimengerti oleh runtime JavaScript.
+
+---
+
+## Langkah 4: Kompilasi ke WebAssembly dengan wasm-pack
+
+Jalankan perintah berikut di direktori project:
+
+```bash
+wasm-pack build --target web
+```
+
+Perintah di atas akan membuat folder baru bernama `pkg/` yang berisi:
+- `rust_wasm_demo_bg.wasm`: File biner WebAssembly hasil kompilasi.
+- `rust_wasm_demo.js`: Wrapper JavaScript ES Module untuk memuat dan mengikat fungsi-fungsi WASM.
+- `rust_wasm_demo.d.ts`: TypeScript definition untuk auto-complete editor.
+- `package.json`: Metadata package jika ingin dipublikasikan ke npm.
+
+---
+
+## Langkah 5: Membuat Antarmuka Web (HTML & JavaScript)
+
+Sekarang mari buat file `index.html` di root project untuk menguji modul WASM yang sudah dibuat:
+
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uji Coba Rust WebAssembly</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 0 20px;
+      line-height: 1.6;
+    }
+    input, button {
+      padding: 8px 14px;
+      font-size: 14px;
+      margin: 5px 0;
+    }
+    .card {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      background: #f8fafc;
+    }
+  </style>
+</head>
+<body>
+  <h1>🦀 Demo Rust WebAssembly</h1>
+  <p>Semua logika di bawah dieksekusi langsung oleh WebAssembly di browser Anda.</p>
+
+  <!-- Bagian 1: Sapaan -->
+  <div class="card">
+    <h3>1. Panggil Web API (Alert)</h3>
+    <input type="text" id="inputNama" placeholder="Masukkan nama Anda..." value="Developer" />
+    <br />
+    <button id="btnSapa">Kirim Sapaan</button>
+  </div>
+
+  <!-- Bagian 2: Balik Kata -->
+  <div class="card">
+    <h3>2. Manipulasi String (Reverse)</h3>
+    <input type="text" id="inputText" placeholder="Ketik kalimat..." value="Halo Dunia" />
+    <br />
+    <button id="btnBalik">Balik Teks</button>
+    <p>Hasil: <strong id="hasilBalik">-</strong></p>
+  </div>
+
+  <!-- Bagian 3: Komputasi Fibonacci -->
+  <div class="card">
+    <h3>3. Uji Kecepatan Komputasi (Fibonacci)</h3>
+    <input type="number" id="inputFibo" value="35" min="1" max="45" />
+    <br />
+    <button id="btnFibo">Hitung dengan Rust</button>
+    <p>Hasil: <strong id="hasilFibo">-</strong></p>
+    <p><small id="durasiFibo"></small></p>
+  </div>
+
+  <script type="module">
+    // Import loader dan fungsi langsung dari folder pkg
+    import init, { sapa, balik_kata, hitung_fibonacci } from './pkg/rust_wasm_demo.js';
+
+    async function run() {
+      // Inisialisasi modul WASM
+      await init();
+      console.log('Modul WebAssembly berhasil dimuat!');
+
+      // Event Sapaan
+      document.getElementById('btnSapa').addEventListener('click', () => {
+        const nama = document.getElementById('inputNama').value;
+        sapa(nama);
+      });
+
+      // Event Balik Kata
+      document.getElementById('btnBalik').addEventListener('click', () => {
+        const teks = document.getElementById('inputText').value;
+        const hasil = balik_kata(teks);
+        document.getElementById('hasilBalik').textContent = hasil;
+      });
+
+      // Event Uji Fibonacci
+      document.getElementById('btnFibo').addEventListener('click', () => {
+        const n = parseInt(document.getElementById('inputFibo').value, 10);
+        
+        const mulai = performance.now();
+        const hasil = hitung_fibonacci(n);
+        const selesai = performance.now();
+        
+        document.getElementById('hasilFibo').textContent = hasil;
+        document.getElementById('durasiFibo').textContent = 
+          `Waktu eksekusi Rust WASM: ${(selesai - mulai).toFixed(2)} ms`;
+      });
+    }
+
+    run();
+  </script>
+</body>
+</html>
+```
+
+---
+
+## Langkah 6: Menjalankan Local Web Server
+
+Karena WebAssembly memuat file `.wasm` secara asinkron menggunakan protokol `fetch`, browser tidak mengizinkan membukanya langsung via `file://`. Anda perlu menjalankannya lewat web server lokal:
+
+```bash
+# Menggunakan Python
+python3 -m http.server 8080
+
+# Atau menggunakan npx serve
+npx serve .
+```
+
+Buka browser Anda di `http://localhost:8080` dan Anda akan melihat antarmuka interaktif yang ditenagai oleh Rust!
+
+---
+
+## Kapan Sebaiknya Menggunakan WebAssembly?
+
+Meskipun WebAssembly sangat cepat, bukan berarti semua kode JavaScript harus diganti dengan WASM. WebAssembly sangat tepat digunakan untuk skenario:
+
+1. **Pemrosesan Gambar & Audio/Video:** Manipulasi kanvas, filter foto, atau encoder/decoder video (misalnya ffmpeg WASM).
+2. **Game & Grafis 3D:** Menggunakan WebGL / WebGPU dengan game engine seperti Bevy.
+3. **Kriptografi & Enkripsi:** Hashing data besar, enkripsi end-to-end, dan pemrosesan kunci privat.
+4. **Parsing Format Kompleks:** Parser dokumen (PDF, Markdown, Spreadsheet) berukuran raksasa.
+5. **Porting Library Native C/C++/Rust:** Menjalankan library desktop yang sudah ada langsung di web tanpa menulis ulang dari nol.
+
+---
+
+## Tips Optimasi Ukuran File WASM
+
+Untuk deployment ke lingkungan produksi, ukuran file biner `.wasm` bisa diperkecil drastis dengan menambahkan profil release di `Cargo.toml`:
+
+```toml
+[profile.release]
+opt-level = "z"     # Optimalkan ukuran binary sekecil mungkin
+lto = true          # Link Time Optimization antar modul
+codegen-units = 1   # Maksimalkan reduksi ukuran
+panic = "abort"     # Hapus pesan unwind panic untuk memangkas bytes
+```
+
+Kompilasi mode produksi:
+
+```bash
+wasm-pack build --target web --release
+```
+
+Dengan konfigurasi ini, ukuran file `.wasm` bisa menyusut hingga lebih dari 60%!
+
+---
+
+## Kesimpulan
+
+Menggabungkan Rust dan WebAssembly membuka jalan baru untuk membangun aplikasi web berperforma tinggi. Dengan ekosistem `wasm-bindgen` dan `wasm-pack`, proses integrasi ke aplikasi web modern menjadi sangat intuitif tanpa mengorbankan keamanan memori khas Rust.
+
+Selamat mencoba, dan mulailah membawa kekuatan komputasi native ke dalam browser Anda!
+
